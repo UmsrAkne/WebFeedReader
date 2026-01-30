@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFeedReader", "WebFeedReader\WebFeedReader.csproj", "{DA15113B-4E23-49D1-A601-07E8645213AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFeedReader.Tests", "WebFeedReader.Tests\WebFeedReader.Tests.csproj", "{7619BFD7-70E3-4001-B089-06431223BE75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{DA15113B-4E23-49D1-A601-07E8645213AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA15113B-4E23-49D1-A601-07E8645213AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA15113B-4E23-49D1-A601-07E8645213AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7619BFD7-70E3-4001-B089-06431223BE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7619BFD7-70E3-4001-B089-06431223BE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7619BFD7-70E3-4001-B089-06431223BE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7619BFD7-70E3-4001-B089-06431223BE75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
