@@ -7,29 +7,29 @@ namespace WebFeedReader.Factories
 {
     public static class FeedItemFactory
     {
-        public static IReadOnlyList<FeedItem> FromJson(string json, int sourceId, string sourceName)
+        public static IReadOnlyList<FeedItem> FromJson(string json, string sourceName)
         {
             using var doc = JsonDocument.Parse(json);
 
             return doc.RootElement
                 .EnumerateArray()
-                .Select(e => ConvertOne(e, sourceId, sourceName))
+                .Select(e => ConvertOne(e, sourceName))
                 .ToList();
         }
 
-        private static FeedItem ConvertOne(JsonElement element, int sourceId, string sourceName)
+        private static FeedItem ConvertOne(JsonElement element, string sourceName)
         {
             var dto = element.Deserialize<FeedItemDto>();
 
             return new FeedItem
             {
-                SourceId = sourceId,
+                SourceId = dto.SourceId,
                 SourceName = sourceName,
                 Title = dto.Title,
                 Link = dto.Link,
                 Published = dto.Published,
                 Summary = dto.Summary,
-                Key = FeedItem.BuildKey(sourceId, dto.Link),
+                Key = FeedItem.BuildKey(dto.SourceId, dto.Link),
                 Raw = element.Clone(),
             };
         }

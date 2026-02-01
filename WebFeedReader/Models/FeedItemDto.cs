@@ -16,5 +16,8 @@ namespace WebFeedReader.Models
 
         [JsonPropertyName("summary")]
         public string Summary { get; init; }
+
+        [JsonPropertyName("source_id")]
+        public int SourceId { get; init; }
     }
 }

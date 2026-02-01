@@ -15,17 +15,20 @@ namespace WebFeedReader.Tests.Factories
                                   {
                                     "title": "サンプル記事A：架空サービスの新機能が発表",
                                     "link": "https://example.com/articles/sample-a?source=rss",
-                                    "published": "2026-01-27T14:52:00"
+                                    "published": "2026-01-27T14:52:00",
+                                    "source_id": 1
                                   },
                                   {
                                     "title": "サンプル記事B：テスト用データの扱い方について",
                                     "link": "https://example.com/articles/sample-b?source=rss",
-                                    "published": "2026-01-27T14:46:51"
+                                    "published": "2026-01-27T14:46:51",
+                                    "source_id": 2
                                   },
                                   {
                                     "title": "サンプル記事C：システム更新のお知らせ",
                                     "link": "https://example.com/articles/sample-c?source=rss",
-                                    "published": "2026-01-27T14:40:37"
+                                    "published": "2026-01-27T14:40:37",
+                                    "source_id": 3
                                   }
                                 ]
                                 """;
@@ -34,7 +37,7 @@ namespace WebFeedReader.Tests.Factories
             const string sourceName = "Dummy Source";
 
             // Act
-            var items = FeedItemFactory.FromJson(json, sourceId, sourceName);
+            var items = FeedItemFactory.FromJson(json, sourceName);
 
             // Assert
             Assert.That(items.Count, Is.EqualTo(3));
