@@ -30,4 +30,10 @@ public sealed record FeedItem
 
     public static string BuildKey(int sourceId, string link)
         => $"{sourceId}:{link}";
+
+    public bool IsRead { get; set; }
+
+    public bool IsFavorite { get; set; }
+
+    public bool IsBlockedByNgWord { get; set; }
 }
