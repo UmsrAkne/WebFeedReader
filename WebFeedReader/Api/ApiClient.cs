@@ -41,12 +41,10 @@ namespace WebFeedReader.Api
             };
 
             sshProcess = Process.Start(startInfo)
-                          ?? throw new InvalidOperationException("Failed to start ssh process");
+                         ?? throw new InvalidOperationException("Failed to start ssh process");
         }
 
-        public async Task<string> GetFeedsAsync(
-            DateTime since,
-            CancellationToken ct = default)
+        public async Task<string> GetFeedsAsync(DateTime since, CancellationToken ct = default)
         {
             EnsureSshTunnel();
 
@@ -56,9 +54,7 @@ namespace WebFeedReader.Api
             return await GetAsync(url, ct);
         }
 
-        public async Task<string> GetSourcesAsync(
-            DateTime since,
-            CancellationToken ct = default)
+        public async Task<string> GetSourcesAsync(DateTime since, CancellationToken ct = default)
         {
             EnsureSshTunnel();
 
