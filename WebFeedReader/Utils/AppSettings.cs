@@ -13,6 +13,8 @@
 
         public bool EnableDebugLog { get; set; }
 
+        public string SshUserName { get; set; }
+
         [JsonIgnore]
         private static string ConfigPath =>
             Path.Combine(AppContext.BaseDirectory, "app_settings.json");
