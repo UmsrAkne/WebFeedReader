@@ -30,7 +30,7 @@ namespace WebFeedReader.Factories
                 Published = dto.Published,
                 Summary = dto.Summary,
                 Key = FeedItem.BuildKey(dto.SourceId, dto.Link),
-                Raw = element.Clone(),
+                Raw = element.Clone().GetRawText(),
             };
         }
     }

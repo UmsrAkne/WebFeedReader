@@ -1,7 +1,6 @@
 ﻿namespace WebFeedReader.Models;
 
 using System;
-using System.Text.Json;
 
 public sealed record FeedItem
 {
@@ -26,7 +25,7 @@ public sealed record FeedItem
 
     public string Summary { get; init; }
 
-    public JsonElement? Raw { get; init; }
+    public string Raw { get; init; }
 
     public static string BuildKey(int sourceId, string link)
         => $"{sourceId}:{link}";
