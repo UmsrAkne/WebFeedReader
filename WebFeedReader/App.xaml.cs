@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using Prism.Ioc;
 using WebFeedReader.Dbs;
+using WebFeedReader.Utils;
 using WebFeedReader.Views;
 
 namespace WebFeedReader;
@@ -19,6 +20,9 @@ public partial class App
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
     {
+        // Register AppSettings as a singleton loaded from a configuration file
+        var appSettings = AppSettings.Load();
+        containerRegistry.RegisterInstance(appSettings);
     }
 
     protected override void OnStartup(StartupEventArgs e)
