@@ -7,12 +7,60 @@
     xmlns:prism="http://prismlibrary.com/"
     xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
     Title="{Binding Title}"
-    Width="525"
-    Height="350"
+    Width="800"
+    Height="400"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
+
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <StatusBar
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3" />
+
+        <TreeView
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Background="LemonChiffon" />
+
+        <GridSplitter
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Width="8"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            Background="Aqua" />
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <ListBox Grid.Row="0" Background="LightSalmon" />
+
+            <Border Grid.Row="1" Background="BurlyWood" />
+        </Grid>
+
+        <StatusBar
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3" />
     </Grid>
+
 </Window>
