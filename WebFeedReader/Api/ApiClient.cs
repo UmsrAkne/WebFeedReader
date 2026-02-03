@@ -7,7 +7,7 @@ using WebFeedReader.Utils;
 
 namespace WebFeedReader.Api
 {
-    public sealed class ApiClient : IDisposable
+    public sealed class ApiClient : IApiClient, IDisposable
     {
         private const string BaseUrl = "http://127.0.0.1:8000";
 
@@ -23,25 +23,6 @@ namespace WebFeedReader.Api
             };
 
             this.appSettings = appSettings;
-        }
-
-        public void EnsureSshTunnel()
-        {
-            if (sshProcess is { HasExited: false, })
-            {
-                return;
-            }
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "ssh",
-                Arguments = $"-N -L 8000:127.0.0.1:8000 {appSettings.SshUserName}",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
-
-            sshProcess = Process.Start(startInfo)
-                         ?? throw new InvalidOperationException("Failed to start ssh process");
         }
 
         public async Task<string> GetFeedsAsync(DateTime since, CancellationToken ct = default)
@@ -85,6 +66,25 @@ namespace WebFeedReader.Api
         private static string FormatDateTime(DateTime dt)
         {
             return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        private void EnsureSshTunnel()
+        {
+            if (sshProcess is { HasExited: false, })
+            {
+                return;
+            }
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "ssh",
+                Arguments = $"-N -L 8000:127.0.0.1:8000 {appSettings.SshUserName}",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+
+            sshProcess = Process.Start(startInfo)
+                         ?? throw new InvalidOperationException("Failed to start ssh process");
         }
 
         private async Task<string> GetAsync(string url, CancellationToken ct)
