@@ -23,6 +23,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
         var sourcesJson = new DummyApiClient().GetSourcesAsync(DateTime.Now);
         FeedSourceListViewModel.Items.AddRange(FeedSourceFactory.FromJson(sourcesJson.Result));
+
+        FeedListViewModel.SelectedItem = FeedListViewModel.Items[0];
     }
 
     public MainWindowViewModel(AppSettings appSettings, IApiClient apiClient)
