@@ -43,7 +43,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
         try
         {
-            var since = DateTime.Now.AddDays(-1);
+            var since = appSettings.LastFeedsUpdate;
 
             var feedJson = await apiClient.GetFeedsAsync(since);
             var sourceJson = await apiClient.GetSourcesAsync(since);
@@ -53,6 +53,13 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
             FeedListViewModel.Items.AddRange(feeds);
             FeedSources = new ObservableCollection<FeedSource>(sources);
+
+            appSettings.LastFeedsUpdate = DateTime.Now;
+            appSettings.Save();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
         finally
         {
