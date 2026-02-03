@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:WebFeedReader.Models"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
     Title="{Binding Title}"
@@ -52,7 +53,26 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0" Background="LightSalmon" />
+            <ListBox
+                Grid.Row="0"
+                ItemsSource="{Binding FeedListViewModel.Items}"
+                SelectedItem="{Binding FeedListViewModel.SelectedItem}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:FeedItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="BorderBrush" Value="DimGray" />
+                        <Setter Property="BorderThickness" Value="0,0.5,0.5,0" />
+                        <Setter Property="Padding" Value="5" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
 
             <Border Grid.Row="1" Background="BurlyWood" />
         </Grid>

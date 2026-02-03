@@ -19,6 +19,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public MainWindowViewModel()
     {
+        var json = new DummyApiClient().GetFeedsAsync(DateTime.Now);
+        FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(json.Result, string.Empty));
     }
 
     public MainWindowViewModel(AppSettings appSettings, IApiClient apiClient)
@@ -33,7 +35,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public ObservableCollection<FeedSource> FeedSources { get; set; }
 
-    public ObservableCollection<FeedItem> FeedItems { get; set; }
+    public FeedListViewModel FeedListViewModel { get; private set; } = new ();
 
     public async Task InitializeAsync()
     {
@@ -49,7 +51,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
             var feeds = FeedItemFactory.FromJson(feedJson, string.Empty);
             var sources = FeedSourceFactory.FromJson(sourceJson);
 
-            FeedItems = new ObservableCollection<FeedItem>(feeds);
+            FeedListViewModel.Items.AddRange(feeds);
             FeedSources = new ObservableCollection<FeedSource>(sources);
         }
         finally
