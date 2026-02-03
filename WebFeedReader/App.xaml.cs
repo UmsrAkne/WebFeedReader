@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using Prism.Ioc;
+using WebFeedReader.Api;
 using WebFeedReader.Dbs;
 using WebFeedReader.Utils;
 using WebFeedReader.ViewModels;
@@ -25,6 +26,14 @@ public partial class App
         // Register AppSettings as a singleton loaded from a configuration file
         var appSettings = AppSettings.Load();
         containerRegistry.RegisterInstance(appSettings);
+
+        #if DEBUG
+        containerRegistry.Register<IApiClient, DummyApiClient>();
+
+        #else
+        containerRegistry.Register<IApiClient, ApiClient>();
+
+        #endif
     }
 
     protected override void OnStartup(StartupEventArgs e)

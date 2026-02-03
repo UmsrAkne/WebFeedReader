@@ -21,10 +21,10 @@ public class MainWindowViewModel : BindableBase, IDisposable
     {
     }
 
-    public MainWindowViewModel(AppSettings appSettings)
+    public MainWindowViewModel(AppSettings appSettings, IApiClient apiClient)
     {
         this.appSettings = appSettings;
-        apiClient = new ApiClient(appSettings);
+        this.apiClient = apiClient;
     }
 
     public string Title => appVersionInfo.Title;
