@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
@@ -32,11 +32,29 @@
             Grid.Column="0"
             Grid.ColumnSpan="3" />
 
-        <TreeView
+        <ListBox
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="0"
-            Background="LemonChiffon" />
+            ItemsSource="{Binding FeedSourceListViewModel.Items}"
+            SelectedItem="{Binding FeedSourceListViewModel.SelectedItem}">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:FeedSource}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="BorderBrush" Value="DimGray" />
+                    <Setter Property="BorderThickness" Value="0,0.5,0.5,0" />
+                    <Setter Property="Padding" Value="5" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
 
         <GridSplitter
             Grid.Row="1"

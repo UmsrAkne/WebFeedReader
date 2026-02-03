@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Prism.Mvvm;
 using WebFeedReader.Api;
 using WebFeedReader.Factories;
-using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
 namespace WebFeedReader.ViewModels;
@@ -19,8 +18,11 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public MainWindowViewModel()
     {
-        var json = new DummyApiClient().GetFeedsAsync(DateTime.Now);
-        FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(json.Result, string.Empty));
+        var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
+        FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));
+
+        var sourcesJson = new DummyApiClient().GetSourcesAsync(DateTime.Now);
+        FeedSourceListViewModel.Items.AddRange(FeedSourceFactory.FromJson(sourcesJson.Result));
     }
 
     public MainWindowViewModel(AppSettings appSettings, IApiClient apiClient)
@@ -33,7 +35,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
 
-    public ObservableCollection<FeedSource> FeedSources { get; set; }
+    public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 
     public FeedListViewModel FeedListViewModel { get; private set; } = new ();
 
@@ -52,7 +54,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
             var sources = FeedSourceFactory.FromJson(sourceJson);
 
             FeedListViewModel.Items.AddRange(feeds);
-            FeedSources = new ObservableCollection<FeedSource>(sources);
+            FeedSourceListViewModel.Items.AddRange(sources);
 
             appSettings.LastFeedsUpdate = DateTime.Now;
             appSettings.Save();
