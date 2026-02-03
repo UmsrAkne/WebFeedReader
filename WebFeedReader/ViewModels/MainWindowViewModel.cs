@@ -14,7 +14,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 {
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
-    private readonly ApiClient apiClient;
+    private readonly IApiClient apiClient;
     private bool isLoading;
 
     public MainWindowViewModel()

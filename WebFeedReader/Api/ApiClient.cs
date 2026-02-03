@@ -7,7 +7,7 @@ using WebFeedReader.Utils;
 
 namespace WebFeedReader.Api
 {
-    public sealed class ApiClient : IDisposable
+    public sealed class ApiClient : IApiClient, IDisposable
     {
         private const string BaseUrl = "http://127.0.0.1:8000";
 
