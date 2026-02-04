@@ -34,5 +34,5 @@ public sealed record FeedItem
 
     public bool IsFavorite { get; set; }
 
-    public bool IsBlockedByNgWord { get; set; }
+    public int NgWordCheckVersion { get; set; }
 }

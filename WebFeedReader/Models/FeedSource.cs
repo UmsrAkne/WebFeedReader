@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 
 namespace WebFeedReader.Models
 {
@@ -20,6 +19,6 @@ namespace WebFeedReader.Models
             public DateTime CreatedAt { get; init; }
 
             // API 生データ保持用
-            public JsonElement Raw { get; init; }
+            public string Raw { get; init; }
     }
 }
