@@ -32,7 +32,7 @@ namespace WebFeedReader.Factories
                 CheckIntervalMinutes = dto.CheckIntervalMinutes,
                 UpdatedAt = dto.UpdatedAt,
                 CreatedAt = dto.CreatedAt,
-                Raw = element.Clone(),
+                Raw = element.Clone().GetRawText(),
             };
         }
     }

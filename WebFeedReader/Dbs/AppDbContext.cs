@@ -15,6 +15,10 @@ namespace WebFeedReader.Dbs
 
         public DbSet<FeedItem> FeedItems => Set<FeedItem>();
 
+        public DbSet<FeedSource> FeedSources => Set<FeedSource>();
+
+        public DbSet<NgWord> NgWords => Set<NgWord>();
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite($"Data Source={dbPath}");

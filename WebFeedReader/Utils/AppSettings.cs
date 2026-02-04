@@ -7,6 +7,9 @@
 
     public sealed class AppSettings
     {
+        // ReSharper disable once ArrangeModifiersOrder
+        public static readonly DateTime InitialFeedsUpdate = new(2000, 1, 1);
+
         public string ApiBaseUrl { get; set; } = "http://localhost:8000";
 
         public int FetchIntervalMinutes { get; set; } = 60;
@@ -14,6 +17,10 @@
         public bool EnableDebugLog { get; set; }
 
         public string SshUserName { get; set; }
+
+        public DateTime LastFeedsUpdate { get; set; } = InitialFeedsUpdate;
+
+        public int NgWordListVersion { get; set; }
 
         [JsonIgnore]
         private static string ConfigPath =>

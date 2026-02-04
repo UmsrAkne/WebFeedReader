@@ -17,6 +17,7 @@ namespace WebFeedReader.Api
                     title = $"サンプル記事 {i:D3}：テスト用フィードデータ",
                     link = $"https://example.com/articles/sample-{i}?source=rss",
                     published = since.AddMinutes(i * 3).ToString("yyyy-MM-ddTHH:mm:ss"),
+                    summary = $"{i} summary summary summary summary summary summary summary summary summary summary summary ",
                     source_id = (i % 5) + 1,
                 });
 

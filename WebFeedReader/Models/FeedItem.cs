@@ -1,9 +1,14 @@
-﻿namespace WebFeedReader.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Prism.Mvvm;
+
+namespace WebFeedReader.Models;
 
 using System;
 
-public sealed record FeedItem
+public sealed class FeedItem : BindableBase
 {
+    private bool isNg;
+
     public int Id { get; set; }
 
     /// <summary>
@@ -34,5 +39,8 @@ public sealed record FeedItem
 
     public bool IsFavorite { get; set; }
 
-    public bool IsBlockedByNgWord { get; set; }
+    public int NgWordCheckVersion { get; set; }
+
+    [NotMapped]
+    public bool IsNg { get => isNg; set => SetProperty(ref isNg, value); }
 }

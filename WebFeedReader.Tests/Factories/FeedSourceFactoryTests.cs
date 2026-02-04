@@ -46,9 +46,7 @@ namespace WebFeedReader.Tests.Factories
                     Is.EqualTo(new DateTime(2026, 1, 1, 12, 0, 0)));
 
                 // Raw が保持されていることの最低限確認
-                Assert.That(
-                    source.Raw.ValueKind,
-                    Is.Not.EqualTo(System.Text.Json.JsonValueKind.Undefined));
+                Assert.That(source.Raw, Is.Not.Null);
             });
         }
     }
