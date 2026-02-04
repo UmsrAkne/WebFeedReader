@@ -111,19 +111,42 @@
                 BorderThickness="0.5"
                 CornerRadius="5">
                 <ListBox
+                    HorizontalContentAlignment="Stretch"
                     BorderThickness="0"
                     ItemsSource="{Binding FeedListViewModel.Items}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectedItem="{Binding FeedListViewModel.SelectedItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:FeedItem}">
                             <DataTemplate.Resources>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
                                 </Style>
                             </DataTemplate.Resources>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Title}" />
-                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Width="20"
+                                    Foreground="LightGray"
+                                    Text="★" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding Title}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Width="120"
+                                    Text="{Binding Published, StringFormat=yyyy/MM/dd HH:mm}"
+                                    TextAlignment="Right" />
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
 
