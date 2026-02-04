@@ -20,6 +20,8 @@
 
         public DateTime LastFeedsUpdate { get; set; } = InitialFeedsUpdate;
 
+        public int NgWordListVersion { get; set; }
+
         [JsonIgnore]
         private static string ConfigPath =>
             Path.Combine(AppContext.BaseDirectory, "app_settings.json");
