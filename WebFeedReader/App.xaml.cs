@@ -27,6 +27,13 @@ public partial class App
         var appSettings = AppSettings.Load();
         containerRegistry.RegisterInstance(appSettings);
 
+        // DB パスをここで確定させる
+        var baseDir = AppContext.BaseDirectory;
+        var dbPath = Path.Combine(baseDir, "Feeds.db");
+
+        // NgWordService を singleton として登録
+        containerRegistry.RegisterInstance(new NgWordService(dbPath, appSettings));
+
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();
 

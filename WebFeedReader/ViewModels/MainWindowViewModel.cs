@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Prism.Mvvm;
 using WebFeedReader.Api;
+using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
 using WebFeedReader.Utils;
 
@@ -14,6 +15,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
     private readonly IApiClient apiClient;
+    private readonly NgWordService ngWordService;
     private bool isLoading;
 
     public MainWindowViewModel()
@@ -27,10 +29,11 @@ public class MainWindowViewModel : BindableBase, IDisposable
         FeedListViewModel.SelectedItem = FeedListViewModel.Items[0];
     }
 
-    public MainWindowViewModel(AppSettings appSettings, IApiClient apiClient)
+    public MainWindowViewModel(AppSettings appSettings, NgWordService ngWordService, IApiClient apiClient)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
+        this.ngWordService = ngWordService;
     }
 
     public string Title => appVersionInfo.Title;
@@ -53,9 +56,11 @@ public class MainWindowViewModel : BindableBase, IDisposable
             var sourceJson = await apiClient.GetSourcesAsync(since);
 
             var feeds = FeedItemFactory.FromJson(feedJson, string.Empty);
+            var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
+
             var sources = FeedSourceFactory.FromJson(sourceJson);
 
-            FeedListViewModel.Items.AddRange(feeds);
+            FeedListViewModel.Items.AddRange(filtered);
             FeedSourceListViewModel.Items.AddRange(sources);
 
             appSettings.LastFeedsUpdate = DateTime.Now;
