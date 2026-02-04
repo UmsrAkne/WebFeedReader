@@ -31,8 +31,13 @@ public partial class App
         var baseDir = AppContext.BaseDirectory;
         var dbPath = Path.Combine(baseDir, "Feeds.db");
 
+        containerRegistry.Register<AppDbContext>(() => new AppDbContext(dbPath));
+
         // NgWordService を singleton として登録
         containerRegistry.RegisterInstance(new NgWordService(dbPath, appSettings));
+
+        containerRegistry.RegisterSingleton<IFeedSourceRepository, FeedSourceRepository>();
+        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceSyncService>();
 
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();
@@ -47,9 +52,7 @@ public partial class App
     {
         base.OnStartup(e);
 
-        var baseDir = AppContext.BaseDirectory;
-        var dbPath = Path.Combine(baseDir, "Feeds.db");
-        var context = new AppDbContext(dbPath);
+        var context = Container.Resolve<AppDbContext>();
         DatabaseInitializer.EnsureDatabase(context);
     }
 

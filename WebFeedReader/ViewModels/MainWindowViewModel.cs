@@ -16,6 +16,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly AppSettings appSettings;
     private readonly IApiClient apiClient;
     private readonly NgWordService ngWordService;
+    private readonly IFeedSourceSyncService feedSourceSyncService;
+    private readonly IFeedSourceRepository feedSourceRepository;
     private bool isLoading;
     private int ngFilteredCount;
 
@@ -30,11 +32,18 @@ public class MainWindowViewModel : BindableBase, IDisposable
         FeedListViewModel.SelectedItem = FeedListViewModel.Items[0];
     }
 
-    public MainWindowViewModel(AppSettings appSettings, NgWordService ngWordService, IApiClient apiClient)
+    public MainWindowViewModel(
+        AppSettings appSettings,
+        NgWordService ngWordService,
+        IApiClient apiClient,
+        IFeedSourceRepository feedSourceRepository,
+        IFeedSourceSyncService feedSourceSyncService)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
         this.ngWordService = ngWordService;
+        this.feedSourceRepository = feedSourceRepository;
+        this.feedSourceSyncService = feedSourceSyncService;
     }
 
     public string Title => appVersionInfo.Title;
@@ -56,7 +65,6 @@ public class MainWindowViewModel : BindableBase, IDisposable
             var since = appSettings.LastFeedsUpdate;
 
             var feedJson = await apiClient.GetFeedsAsync(since);
-            var sourceJson = await apiClient.GetSourcesAsync(since);
 
             var feeds = FeedItemFactory.FromJson(feedJson, string.Empty);
             var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
@@ -64,10 +72,11 @@ public class MainWindowViewModel : BindableBase, IDisposable
             // Update NG filtered count for status bar
             NgFilteredCount = feeds.Count - filtered.Count;
 
-            var sources = FeedSourceFactory.FromJson(sourceJson);
+            await feedSourceSyncService.SyncAsync(since);
+            var sources = await feedSourceRepository.GetAllAsync();
+            FeedSourceListViewModel.Items.AddRange(sources);
 
             FeedListViewModel.Items.AddRange(filtered);
-            FeedSourceListViewModel.Items.AddRange(sources);
 
             appSettings.LastFeedsUpdate = DateTime.Now;
             appSettings.Save();
