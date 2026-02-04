@@ -41,6 +41,5 @@ public sealed class FeedItem : BindableBase
 
     public int NgWordCheckVersion { get; set; }
 
-    [NotMapped]
     public bool IsNg { get => isNg; set => SetProperty(ref isNg, value); }
 }
