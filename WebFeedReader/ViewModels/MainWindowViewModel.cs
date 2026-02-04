@@ -17,6 +17,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly IApiClient apiClient;
     private readonly NgWordService ngWordService;
     private bool isLoading;
+    private int ngFilteredCount;
 
     public MainWindowViewModel()
     {
@@ -40,6 +41,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
 
+    public int NgFilteredCount { get => ngFilteredCount; private set => SetProperty(ref ngFilteredCount, value); }
+
     public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 
     public FeedListViewModel FeedListViewModel { get; private set; } = new ();
@@ -57,6 +60,9 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
             var feeds = FeedItemFactory.FromJson(feedJson, string.Empty);
             var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
+
+            // Update NG filtered count for status bar
+            NgFilteredCount = feeds.Count - filtered.Count;
 
             var sources = FeedSourceFactory.FromJson(sourceJson);
 

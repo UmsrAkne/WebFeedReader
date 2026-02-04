@@ -177,7 +177,12 @@
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Background="White" />
+            Padding="5"
+            Background="White">
+            <StatusBarItem>
+                <TextBlock Text="{Binding NgFilteredCount, StringFormat=NG除外: {0} 件}" />
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 
 </Window>
