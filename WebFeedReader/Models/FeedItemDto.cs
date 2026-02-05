@@ -5,6 +5,9 @@ namespace WebFeedReader.Models
 {
     internal sealed class FeedItemDto
     {
+        [JsonPropertyName("id")]
+        public int Id { get; init; }
+
         [JsonPropertyName("title")]
         public string Title { get; init; }
 

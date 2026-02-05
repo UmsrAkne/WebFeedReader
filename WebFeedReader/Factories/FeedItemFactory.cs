@@ -23,6 +23,7 @@ namespace WebFeedReader.Factories
 
             return new FeedItem
             {
+                Id = dto.Id,
                 SourceId = dto.SourceId,
                 SourceName = sourceName,
                 Title = dto.Title,
