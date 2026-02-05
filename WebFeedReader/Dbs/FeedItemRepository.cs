@@ -21,17 +21,18 @@ namespace WebFeedReader.Dbs
         {
             const string sql = """
                                INSERT INTO FeedItems (
-                                   Id,
+                                   Id, 
                                    Key,
                                    SourceId,
                                    SourceName,
                                    Title,
-                                   Link,
+                                   Link, 
                                    Published,
                                    Summary,
                                    Raw,
                                    IsRead,
                                    IsFavorite,
+                                   IsNg,
                                    NgWordCheckVersion
                                )
                                VALUES (
@@ -41,23 +42,17 @@ namespace WebFeedReader.Dbs
                                    @SourceName,
                                    @Title,
                                    @Link,
+                                       
                                    @Published,
                                    @Summary,
                                    @Raw,
                                    @IsRead,
                                    @IsFavorite,
+                                   @IsNg,
                                    @NgWordCheckVersion
                                )
-                               ON CONFLICT(Key) DO UPDATE SET
-                                   Title = excluded.Title,
-                                   Published = excluded.Published,
-                                   Summary = excluded.Summary,
-                                   Raw = excluded.Raw,
-                                   IsRead = excluded.IsRead,
-                                   IsFavorite = excluded.IsFavorite,
-                                   NgWordCheckVersion = excluded.NgWordCheckVersion;
+                               ON CONFLICT DO NOTHING;
                                """;
-
             await using var db = dbFactory();
             await db.Database.ExecuteSqlRawAsync(
                 sql,
@@ -72,6 +67,7 @@ namespace WebFeedReader.Dbs
                 new SqliteParameter("@Raw", item.Raw),
                 new SqliteParameter("@IsRead", item.IsRead),
                 new SqliteParameter("@IsFavorite", item.IsFavorite),
+                new SqliteParameter("@IsNg", item.IsNg),
                 new SqliteParameter("@NgWordCheckVersion", item.NgWordCheckVersion));
         }
 
