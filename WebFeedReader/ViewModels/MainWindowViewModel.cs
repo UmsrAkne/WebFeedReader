@@ -16,6 +16,10 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly AppSettings appSettings;
     private readonly IApiClient apiClient;
     private readonly NgWordService ngWordService;
+    private readonly IFeedSourceSyncService feedSourceSyncService;
+    private readonly IFeedSourceRepository feedSourceRepository;
+    private readonly IFeedItemRepository feedItemRepository;
+    private readonly IFeedSyncService feedSyncService;
     private bool isLoading;
     private int ngFilteredCount;
 
@@ -30,11 +34,22 @@ public class MainWindowViewModel : BindableBase, IDisposable
         FeedListViewModel.SelectedItem = FeedListViewModel.Items[0];
     }
 
-    public MainWindowViewModel(AppSettings appSettings, NgWordService ngWordService, IApiClient apiClient)
+    public MainWindowViewModel(
+        AppSettings appSettings,
+        NgWordService ngWordService,
+        IApiClient apiClient,
+        IFeedSourceRepository feedSourceRepository,
+        IFeedSourceSyncService feedSourceSyncService,
+        IFeedItemRepository feedItemRepository,
+        IFeedSyncService feedSyncService)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
         this.ngWordService = ngWordService;
+        this.feedSourceRepository = feedSourceRepository;
+        this.feedSourceSyncService = feedSourceSyncService;
+        this.feedItemRepository = feedItemRepository;
+        this.feedSyncService = feedSyncService;
     }
 
     public string Title => appVersionInfo.Title;
@@ -55,19 +70,19 @@ public class MainWindowViewModel : BindableBase, IDisposable
         {
             var since = appSettings.LastFeedsUpdate;
 
-            var feedJson = await apiClient.GetFeedsAsync(since);
-            var sourceJson = await apiClient.GetSourcesAsync(since);
+            await feedSourceSyncService.SyncAsync(since);
+            await feedSyncService.SyncAsync(since);
 
-            var feeds = FeedItemFactory.FromJson(feedJson, string.Empty);
+            var sources = await feedSourceRepository.GetAllAsync();
+            FeedSourceListViewModel.Items.AddRange(sources);
+
+            var feeds = await feedItemRepository.GetAllAsync();
             var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
 
             // Update NG filtered count for status bar
             NgFilteredCount = feeds.Count - filtered.Count;
 
-            var sources = FeedSourceFactory.FromJson(sourceJson);
-
             FeedListViewModel.Items.AddRange(filtered);
-            FeedSourceListViewModel.Items.AddRange(sources);
 
             appSettings.LastFeedsUpdate = DateTime.Now;
             appSettings.Save();

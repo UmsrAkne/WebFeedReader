@@ -31,8 +31,16 @@ public partial class App
         var baseDir = AppContext.BaseDirectory;
         var dbPath = Path.Combine(baseDir, "Feeds.db");
 
-        // NgWordService を singleton として登録
-        containerRegistry.RegisterInstance(new NgWordService(dbPath, appSettings));
+        containerRegistry.Register<AppDbContext>(() => new AppDbContext(dbPath));
+
+        containerRegistry.Register<Func<AppDbContext>>(() => () => new AppDbContext(dbPath));
+        containerRegistry.RegisterSingleton<NgWordService>();
+
+        containerRegistry.RegisterSingleton<IFeedSourceRepository, FeedSourceRepository>();
+        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceSyncService>();
+
+        containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
+        containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();
@@ -47,9 +55,7 @@ public partial class App
     {
         base.OnStartup(e);
 
-        var baseDir = AppContext.BaseDirectory;
-        var dbPath = Path.Combine(baseDir, "Feeds.db");
-        var context = new AppDbContext(dbPath);
+        var context = Container.Resolve<AppDbContext>();
         DatabaseInitializer.EnsureDatabase(context);
     }
 

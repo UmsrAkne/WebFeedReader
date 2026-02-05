@@ -14,6 +14,7 @@ namespace WebFeedReader.Api
             var items = Enumerable.Range(1, 100)
                 .Select(i => new
                 {
+                    id = i,
                     title = $"サンプル記事 {i:D3}：テスト用フィードデータ",
                     link = $"https://example.com/articles/sample-{i}?source=rss",
                     published = since.AddMinutes(i * 3).ToString("yyyy-MM-ddTHH:mm:ss"),
