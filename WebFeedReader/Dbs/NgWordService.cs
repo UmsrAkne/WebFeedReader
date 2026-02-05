@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,15 +11,12 @@ namespace WebFeedReader.Dbs
 {
     public sealed class NgWordService
     {
-        // SQLite 同時アクセス防止
-        private readonly static SemaphoreSlim DbLock = new (1, 1);
-
-        private readonly string dbPath;
+        private readonly Func<AppDbContext> dbFactory;
         private readonly AppSettings appSettings;
 
-        public NgWordService(string dbPath, AppSettings appSettings)
+        public NgWordService(Func<AppDbContext> dbFactory, AppSettings appSettings)
         {
-            this.dbPath = dbPath;
+            this.dbFactory = dbFactory;
             this.appSettings = appSettings;
         }
 
@@ -38,8 +36,9 @@ namespace WebFeedReader.Dbs
         /// 表示直前などで呼ぶ：必要なものだけ NG チェックする
         /// </summary>
         /// <param name="feeds">チェックするフィードのリスト</param>
+        /// <param name="ct">キャンセレーショントークン</param>
         /// <returns>非同期処理を表す Task</returns>
-        public async Task EnsureCheckedAsync(IEnumerable<FeedItem> feeds)
+        public async Task EnsureCheckedAsync(IEnumerable<FeedItem> feeds, CancellationToken ct = default)
         {
             var targetVersion = appSettings.NgWordListVersion;
             var targets = feeds
@@ -51,27 +50,19 @@ namespace WebFeedReader.Dbs
                 return;
             }
 
-            await DbLock.WaitAsync();
-            try
+            await using var db = dbFactory();
+
+            var ngWords = await db.NgWords
+                .Select(w => w.Value)
+                .ToListAsync(cancellationToken: ct);
+
+            foreach (var feed in targets)
             {
-                await using var db = new AppDbContext(dbPath);
-
-                var ngWords = await db.NgWords
-                    .Select(w => w.Value)
-                    .ToListAsync();
-
-                foreach (var feed in targets)
-                {
-                    feed.IsNg = ContainsNgWord(feed, ngWords);
-                    feed.NgWordCheckVersion = targetVersion;
-                }
-
-                await db.SaveChangesAsync();
+                feed.IsNg = ContainsNgWord(feed, ngWords);
+                feed.NgWordCheckVersion = targetVersion;
             }
-            finally
-            {
-                DbLock.Release();
-            }
+
+            await db.SaveChangesAsync(ct);
         }
 
         private static bool ContainsNgWord(FeedItem feed, IReadOnlyList<string> ngWords)

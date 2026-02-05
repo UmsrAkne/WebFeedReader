@@ -33,8 +33,8 @@ public partial class App
 
         containerRegistry.Register<AppDbContext>(() => new AppDbContext(dbPath));
 
-        // NgWordService を singleton として登録
-        containerRegistry.RegisterInstance(new NgWordService(dbPath, appSettings));
+        containerRegistry.Register<Func<AppDbContext>>(() => () => new AppDbContext(dbPath));
+        containerRegistry.RegisterSingleton<NgWordService>();
 
         containerRegistry.RegisterSingleton<IFeedSourceRepository, FeedSourceRepository>();
         containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceSyncService>();
