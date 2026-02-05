@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Prism.Mvvm;
 
 namespace WebFeedReader.Models;
@@ -16,21 +17,21 @@ public sealed class FeedItem : BindableBase
     /// サーバーが entry の id を返さない/変わる可能性があるので、
     /// 最低限 (SourceId, Link) で一意にする前提。
     /// </summary>
-    public string Key { get; init; }
+    public string Key { get; set; }
 
-    public int SourceId { get; init; }
+    public int SourceId { get; set; }
 
-    public string SourceName { get; init; }
+    public string SourceName { get; set; }
 
-    public string Title { get; init; }
+    public string Title { get; set; }
 
-    public string Link { get; init; }
+    public string Link { get; set; }
 
-    public DateTimeOffset? Published { get; init; }
+    public DateTimeOffset? Published { get; set; }
 
-    public string Summary { get; init; }
+    public string Summary { get; set; }
 
-    public string Raw { get; init; }
+    public string Raw { get; set; }
 
     public static string BuildKey(int sourceId, string link)
         => $"{sourceId}:{link}";
