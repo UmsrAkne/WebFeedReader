@@ -18,12 +18,12 @@ namespace WebFeedReader.Api
 
         public async Task SyncAsync(DateTime since)
         {
-            var json = await apiClient.GetSourcesAsync(since);
-            var sources = FeedItemFactory.FromJson(json, string.Empty);
+            var json = await apiClient.GetFeedsAsync(since);
+            var feeds = FeedItemFactory.FromJson(json, string.Empty);
 
-            foreach (var source in sources)
+            foreach (var feed in feeds)
             {
-                await repository.UpsertAsync(source);
+                await repository.UpsertAsync(feed);
             }
         }
     }
