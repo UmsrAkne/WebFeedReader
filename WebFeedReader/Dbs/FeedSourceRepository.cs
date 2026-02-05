@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -9,11 +10,11 @@ namespace WebFeedReader.Dbs
 {
     public class FeedSourceRepository : IFeedSourceRepository
     {
-        private readonly AppDbContext db;
+        private readonly Func<AppDbContext> dbFactory;
 
-        public FeedSourceRepository(AppDbContext db)
+        public FeedSourceRepository(Func<AppDbContext> dbFactory)
         {
-            this.db = db;
+            this.dbFactory = dbFactory;
         }
 
         public async Task UpsertAsync(FeedSource source)
@@ -48,6 +49,7 @@ namespace WebFeedReader.Dbs
                                    Raw = excluded.Raw;
                                """;
 
+            await using var db = dbFactory();
             await db.Database.ExecuteSqlRawAsync(
                 sql,
                 new SqliteParameter("@Id", source.Id),
@@ -62,6 +64,7 @@ namespace WebFeedReader.Dbs
 
         public async Task<IReadOnlyList<FeedSource>> GetAllAsync()
         {
+            await using var db = dbFactory();
             return await db.FeedSources
                 .AsNoTracking()
                 .OrderBy(x => x.Name)
