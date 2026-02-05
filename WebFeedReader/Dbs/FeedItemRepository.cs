@@ -74,10 +74,16 @@ namespace WebFeedReader.Dbs
         public async Task<IReadOnlyList<FeedItem>> GetAllAsync()
         {
             await using var db = dbFactory();
-            return await db.FeedItems
+
+            // 1. まずデータを取得する（この時点ではソートしない）
+            var items = await db.FeedItems
                 .AsNoTracking()
-                .OrderByDescending(x => x.Published)
                 .ToListAsync();
+
+            // 2. メモリ上（C#側）で並べ替える
+            return items
+                .OrderByDescending(x => x.Published)
+                .ToList();
         }
 
         public async Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId)
