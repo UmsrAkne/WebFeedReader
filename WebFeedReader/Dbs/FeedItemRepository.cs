@@ -89,11 +89,14 @@ namespace WebFeedReader.Dbs
         public async Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId)
         {
             await using var db = dbFactory();
-            return await db.FeedItems
+            var items = await db.FeedItems
                 .AsNoTracking()
                 .Where(x => x.SourceId == sourceId)
-                .OrderByDescending(x => x.Published)
                 .ToListAsync();
+
+            return items
+                .OrderByDescending(x => x.Published)
+                .ToList();
         }
 
         public async Task MarkAsReadAsync(IEnumerable<string> keys)

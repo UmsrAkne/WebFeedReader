@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Prism.Mvvm;
 using WebFeedReader.Dbs;
 using WebFeedReader.Models;
@@ -17,13 +18,15 @@ namespace WebFeedReader.ViewModels
             this.repository = repository;
         }
 
-        public ObservableCollection<FeedItem> Items { get => items; set => SetProperty(ref items, value); }
+        public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
 
         public FeedItem SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
 
-        public void UpdateItems(FeedSource source)
+        public async Task UpdateItemsAsync(FeedSource source)
         {
-            System.Console.WriteLine($"UpdateItems: {source.Name}");
+            var list = await repository.GetBySourceIdAsync(source.Id);
+            Items = new ObservableCollection<FeedItem>(list);
+            System.Console.WriteLine($"UpdateItemsAsync: {source.Name}");
         }
     }
 }

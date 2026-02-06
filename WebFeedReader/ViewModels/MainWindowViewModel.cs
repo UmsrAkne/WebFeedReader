@@ -53,9 +53,9 @@ public class MainWindowViewModel : BindableBase, IDisposable
         this.feedSyncService = feedSyncService;
         FeedListViewModel = feedListViewModel;
 
-        FeedSourceListViewModel.SelectedItemChanged += source =>
+        FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
-            FeedListViewModel.UpdateItems(source);
+            await FeedListViewModel.UpdateItemsAsync(source);
         };
     }
 
