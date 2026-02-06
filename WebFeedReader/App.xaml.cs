@@ -42,6 +42,8 @@ public partial class App
         containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
+        containerRegistry.Register<FeedListViewModel>();
+
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();
 

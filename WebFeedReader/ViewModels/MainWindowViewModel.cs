@@ -41,7 +41,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedItemRepository feedItemRepository,
-        IFeedSyncService feedSyncService)
+        IFeedSyncService feedSyncService,
+        FeedListViewModel feedListViewModel)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
@@ -50,6 +51,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedItemRepository = feedItemRepository;
         this.feedSyncService = feedSyncService;
+        FeedListViewModel = feedListViewModel;
 
         FeedSourceListViewModel.SelectedItemChanged += source =>
         {
@@ -65,7 +67,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 
-    public FeedListViewModel FeedListViewModel { get; private set; } = new ();
+    public FeedListViewModel FeedListViewModel { get; private set; }
 
     public async Task InitializeAsync()
     {
