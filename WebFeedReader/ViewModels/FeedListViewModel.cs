@@ -13,5 +13,10 @@ namespace WebFeedReader.ViewModels
         public ObservableCollection<FeedItem> Items { get => items; set => SetProperty(ref items, value); }
 
         public FeedItem SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+
+        public void UpdateItems(FeedSource source)
+        {
+            System.Console.WriteLine($"UpdateItems: {source.Name}");
+        }
     }
 }

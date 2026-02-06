@@ -50,6 +50,11 @@ public class MainWindowViewModel : BindableBase, IDisposable
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedItemRepository = feedItemRepository;
         this.feedSyncService = feedSyncService;
+
+        FeedSourceListViewModel.SelectedItemChanged += source =>
+        {
+            FeedListViewModel.UpdateItems(source);
+        };
     }
 
     public string Title => appVersionInfo.Title;
