@@ -117,6 +117,20 @@
                     ItemsSource="{Binding FeedListViewModel.Items}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectedItem="{Binding FeedListViewModel.SelectedItem}">
+                    <ListBox.InputBindings>
+                        <KeyBinding
+                            Key="C"
+                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Title}"
+                            Modifiers="Control" />
+
+                        <KeyBinding
+                            Key="C"
+                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Summary}"
+                            Modifiers="Control+Shift" />
+                    </ListBox.InputBindings>
+
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:FeedItem}">
                             <DataTemplate.Resources>

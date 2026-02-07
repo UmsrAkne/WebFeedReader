@@ -69,6 +69,16 @@ namespace WebFeedReader.ViewModels
             }
         });
 
+        public DelegateCommand<string> CopyToClipboardCommand => new (param =>
+        {
+            if (string.IsNullOrWhiteSpace(param))
+            {
+                return;
+            }
+
+            System.Windows.Clipboard.SetText(param);
+        });
+
         public async Task UpdateItemsAsync(FeedSource source)
         {
             var list = await repository.GetBySourceIdAsync(source.Id);
