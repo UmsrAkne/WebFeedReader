@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
+using WebFeedReader.Utils;
 
 namespace WebFeedReader.Api
 {
@@ -19,6 +20,7 @@ namespace WebFeedReader.Api
         public async Task SyncAsync(DateTime since)
         {
             var json = await apiClient.GetSourcesAsync(since);
+            json = DateTimeFormatFixer.FixDateTimeFormat(json);
             var sources = FeedSourceFactory.FromJson(json);
 
             foreach (var source in sources)
