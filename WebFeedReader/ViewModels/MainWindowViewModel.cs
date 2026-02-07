@@ -15,10 +15,8 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
     private readonly IApiClient apiClient;
-    private readonly NgWordService ngWordService;
     private readonly IFeedSourceSyncService feedSourceSyncService;
     private readonly IFeedSourceRepository feedSourceRepository;
-    private readonly IFeedItemRepository feedItemRepository;
     private readonly IFeedSyncService feedSyncService;
     private bool isLoading;
 
@@ -37,20 +35,16 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public MainWindowViewModel(
         AppSettings appSettings,
-        NgWordService ngWordService,
         IApiClient apiClient,
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
-        IFeedItemRepository feedItemRepository,
         IFeedSyncService feedSyncService,
         FeedListViewModel feedListViewModel)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
-        this.ngWordService = ngWordService;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
-        this.feedItemRepository = feedItemRepository;
         this.feedSyncService = feedSyncService;
         FeedListViewModel = feedListViewModel;
 
