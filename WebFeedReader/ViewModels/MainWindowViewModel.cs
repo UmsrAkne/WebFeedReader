@@ -15,16 +15,15 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
     private readonly IApiClient apiClient;
-    private readonly NgWordService ngWordService;
     private readonly IFeedSourceSyncService feedSourceSyncService;
     private readonly IFeedSourceRepository feedSourceRepository;
-    private readonly IFeedItemRepository feedItemRepository;
     private readonly IFeedSyncService feedSyncService;
     private bool isLoading;
-    private int ngFilteredCount;
 
     public MainWindowViewModel()
     {
+        FeedListViewModel = new FeedListViewModel(null, null);
+
         var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
         FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));
 
@@ -36,31 +35,32 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public MainWindowViewModel(
         AppSettings appSettings,
-        NgWordService ngWordService,
         IApiClient apiClient,
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
-        IFeedItemRepository feedItemRepository,
-        IFeedSyncService feedSyncService)
+        IFeedSyncService feedSyncService,
+        FeedListViewModel feedListViewModel)
     {
         this.appSettings = appSettings;
         this.apiClient = apiClient;
-        this.ngWordService = ngWordService;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
-        this.feedItemRepository = feedItemRepository;
         this.feedSyncService = feedSyncService;
+        FeedListViewModel = feedListViewModel;
+
+        FeedSourceListViewModel.SelectedItemChanged += async source =>
+        {
+            await FeedListViewModel.UpdateItemsAsync(source);
+        };
     }
 
     public string Title => appVersionInfo.Title;
 
     public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
 
-    public int NgFilteredCount { get => ngFilteredCount; private set => SetProperty(ref ngFilteredCount, value); }
-
     public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 
-    public FeedListViewModel FeedListViewModel { get; private set; } = new ();
+    public FeedListViewModel FeedListViewModel { get; private set; }
 
     public async Task InitializeAsync()
     {
@@ -75,14 +75,6 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
-
-            var feeds = await feedItemRepository.GetAllAsync();
-            var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
-
-            // Update NG filtered count for status bar
-            NgFilteredCount = feeds.Count - filtered.Count;
-
-            FeedListViewModel.Items.AddRange(filtered);
 
             appSettings.LastFeedsUpdate = DateTime.Now;
             appSettings.Save();

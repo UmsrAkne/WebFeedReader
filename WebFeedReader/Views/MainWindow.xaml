@@ -2,6 +2,7 @@
     x:Class="WebFeedReader.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:WebFeedReader.Models"
@@ -116,6 +117,20 @@
                     ItemsSource="{Binding FeedListViewModel.Items}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectedItem="{Binding FeedListViewModel.SelectedItem}">
+                    <ListBox.InputBindings>
+                        <KeyBinding
+                            Key="C"
+                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Title}"
+                            Modifiers="Control" />
+
+                        <KeyBinding
+                            Key="C"
+                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Summary}"
+                            Modifiers="Control+Shift" />
+                    </ListBox.InputBindings>
+
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:FeedItem}">
                             <DataTemplate.Resources>
@@ -124,29 +139,57 @@
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                 </Style>
                             </DataTemplate.Resources>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
 
-                                <TextBlock
-                                    Grid.Column="0"
-                                    Width="20"
-                                    Foreground="LightGray"
-                                    Text="★" />
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Text="{Binding Title}"
-                                    TextTrimming="CharacterEllipsis"
-                                    TextWrapping="NoWrap" />
-                                <TextBlock
-                                    Grid.Column="2"
-                                    Width="120"
-                                    Text="{Binding Published, StringFormat=yyyy/MM/dd HH:mm}"
-                                    TextAlignment="Right" />
-                            </Grid>
+                            <ContentControl FocusVisualStyle="{x:Null}">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="MouseDoubleClick">
+                                        <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.OpenUrlCommand}" CommandParameter="{Binding Link}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border
+                                        Grid.Column="0"
+                                        Width="5"
+                                        Margin="0,0,5,0"
+                                        CornerRadius="3">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Orange" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRead}" Value="True">
+                                                        <Setter Property="Background" Value="Transparent" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Width="20"
+                                        Foreground="LightGray"
+                                        Text="★" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Text="{Binding Title}"
+                                        TextTrimming="CharacterEllipsis"
+                                        TextWrapping="NoWrap" />
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        Width="120"
+                                        Text="{Binding Published, StringFormat=yyyy/MM/dd HH:mm}"
+                                        TextAlignment="Right" />
+                                </Grid>
+
+                            </ContentControl>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
 
@@ -164,7 +207,11 @@
                                     <ControlTemplate TargetType="ListBoxItem">
                                         <Border
                                             x:Name="Bd"
+                                            Padding="{TemplateBinding Padding}"
                                             Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4"
                                             SnapsToDevicePixels="True">
 
                                             <ContentPresenter
@@ -183,7 +230,6 @@
                                             <!-- 選択中 -->
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Background" Value="#334A90E2" />
-                                                <Setter Property="BorderThickness" Value="3" />
                                             </Trigger>
 
                                             <!-- 非アクティブ時の選択 -->
@@ -229,7 +275,7 @@
             Padding="5"
             Background="White">
             <StatusBarItem>
-                <TextBlock Text="{Binding NgFilteredCount, StringFormat=NG除外: {0} 件}" />
+                <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

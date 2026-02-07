@@ -9,6 +9,7 @@ using System;
 public sealed class FeedItem : BindableBase
 {
     private bool isNg;
+    private bool isRead;
 
     public int Id { get; set; }
 
@@ -36,7 +37,7 @@ public sealed class FeedItem : BindableBase
     public static string BuildKey(int sourceId, string link)
         => $"{sourceId}:{link}";
 
-    public bool IsRead { get; set; }
+    public bool IsRead { get => isRead; set => SetProperty(ref isRead, value); }
 
     public bool IsFavorite { get; set; }
 
