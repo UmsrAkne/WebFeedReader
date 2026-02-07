@@ -50,7 +50,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
-            await FeedListViewModel.UpdateItemsAsync(source);
+            await FeedListViewModel.OnSourceSelectedAsync(source);
         };
     }
 
