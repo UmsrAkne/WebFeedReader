@@ -10,11 +10,10 @@ using WebFeedReader.Utils;
 namespace WebFeedReader.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class MainWindowViewModel : BindableBase, IScrollResettable, IDisposable
+public class MainWindowViewModel : BindableBase, IScrollResettable
 {
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
-    private readonly IApiClient apiClient;
     private readonly IFeedSourceSyncService feedSourceSyncService;
     private readonly IFeedSourceRepository feedSourceRepository;
     private readonly IFeedSyncService feedSyncService;
@@ -35,14 +34,12 @@ public class MainWindowViewModel : BindableBase, IScrollResettable, IDisposable
 
     public MainWindowViewModel(
         AppSettings appSettings,
-        IApiClient apiClient,
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedSyncService feedSyncService,
         FeedListViewModel feedListViewModel)
     {
         this.appSettings = appSettings;
-        this.apiClient = apiClient;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
@@ -90,16 +87,5 @@ public class MainWindowViewModel : BindableBase, IScrollResettable, IDisposable
         {
             IsLoading = false;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        apiClient.Dispose();
     }
 }
