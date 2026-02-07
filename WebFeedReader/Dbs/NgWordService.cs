@@ -65,8 +65,10 @@ namespace WebFeedReader.Dbs
             await db.SaveChangesAsync(ct);
         }
 
-        public IReadOnlyList<NgCheckResult> Check(IEnumerable<FeedItem> feeds, IReadOnlyList<string> ngWords)
+        public async Task<IReadOnlyList<NgCheckResult>> Check(IEnumerable<FeedItem> feeds)
         {
+            await using var db = dbFactory();
+            var ngWords = await db.NgWords.Select(w => w.Value).ToListAsync();
             return feeds.Select(f => new NgCheckResult
             {
                 FeedId = f.Id,
