@@ -16,6 +16,7 @@ namespace WebFeedReader.ViewModels
         private readonly List<FeedItem> readItems = new ();
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
+        private int ngFilteredCount;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
@@ -40,6 +41,8 @@ namespace WebFeedReader.ViewModels
             }
         }
 
+        public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
+
         public async Task UpdateItemsAsync(FeedSource source)
         {
             var list = await repository.GetBySourceIdAsync(source.Id);
@@ -47,7 +50,14 @@ namespace WebFeedReader.ViewModels
             var checkResults = await ngWordService.Check(list);
             await repository.ApplyNgCheckResultsAsync(checkResults);
 
-            Items = new ObservableCollection<FeedItem>(list);
+            foreach (var r in checkResults)
+            {
+                list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
+            }
+
+            NgFilteredCount = list.Count(f => f.IsNg);
+
+            Items = new ObservableCollection<FeedItem>(list.Where(f => !f.IsNg));
 
             await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
             readItems.Clear();

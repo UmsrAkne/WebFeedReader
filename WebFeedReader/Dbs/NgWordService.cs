@@ -72,7 +72,7 @@ namespace WebFeedReader.Dbs
             return feeds.Select(f => new NgCheckResult
             {
                 FeedId = f.Id,
-                IsNg = ContainsNgWord(f, ngWords),
+                IsNg = f.NgWordCheckVersion < appSettings.NgWordListVersion ? ContainsNgWord(f, ngWords) : f.IsNg,
                 Version = appSettings.NgWordListVersion,
             }).ToList();
         }
