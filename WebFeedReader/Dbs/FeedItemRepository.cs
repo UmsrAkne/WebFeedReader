@@ -118,5 +118,44 @@ namespace WebFeedReader.Dbs
                     .ExecuteUpdateAsync(s => s.SetProperty(f => f.IsRead, true));
             }
         }
+
+        public async Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results)
+        {
+            var resultList = results.ToList();
+            if (resultList.Count == 0)
+            {
+                return;
+            }
+
+            await using var db = dbFactory();
+
+            // FeedId ごとにまとめておく（IN 句用）
+            // SQLite の IN 句制限対策で 900 件ずつ処理
+            foreach (var chunk in resultList.Chunk(900))
+            {
+                var version = chunk.First().Version;
+
+                var ngIds = chunk.Where(r => r.IsNg).Select(r => r.FeedId).ToList();
+                var okIds = chunk.Where(r => !r.IsNg).Select(r => r.FeedId).ToList();
+
+                if (ngIds.Count > 0)
+                {
+                    await db.FeedItems
+                        .Where(f => ngIds.Contains(f.Id))
+                        .ExecuteUpdateAsync(s =>
+                            s.SetProperty(f => f.IsNg, true)
+                                .SetProperty(f => f.NgWordCheckVersion, version));
+                }
+
+                if (okIds.Count > 0)
+                {
+                    await db.FeedItems
+                        .Where(f => okIds.Contains(f.Id))
+                        .ExecuteUpdateAsync(s =>
+                            s.SetProperty(f => f.IsNg, false)
+                                .SetProperty(f => f.NgWordCheckVersion, version));
+                }
+            }
+        }
     }
 }

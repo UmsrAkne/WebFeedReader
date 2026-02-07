@@ -13,5 +13,7 @@ namespace WebFeedReader.Dbs
         Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId);
 
         Task MarkAsReadAsync(IEnumerable<string> keys);
+
+        Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results);
     }
 }

@@ -43,6 +43,10 @@ namespace WebFeedReader.ViewModels
         public async Task UpdateItemsAsync(FeedSource source)
         {
             var list = await repository.GetBySourceIdAsync(source.Id);
+
+            var checkResults = await ngWordService.Check(list);
+            await repository.ApplyNgCheckResultsAsync(checkResults);
+
             Items = new ObservableCollection<FeedItem>(list);
 
             await repository.MarkAsReadAsync(readItems.Select(i => i.Key));

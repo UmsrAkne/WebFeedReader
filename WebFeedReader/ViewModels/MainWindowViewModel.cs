@@ -85,14 +85,6 @@ public class MainWindowViewModel : BindableBase, IDisposable
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
 
-            var feeds = await feedItemRepository.GetAllAsync();
-            var filtered = await ngWordService.FilterNewFeedsAsync(feeds);
-
-            // Update NG filtered count for status bar
-            NgFilteredCount = feeds.Count - filtered.Count;
-
-            FeedListViewModel.Items.AddRange(filtered);
-
             appSettings.LastFeedsUpdate = DateTime.Now;
             appSettings.Save();
         }
