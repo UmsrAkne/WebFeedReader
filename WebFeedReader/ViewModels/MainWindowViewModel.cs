@@ -21,7 +21,6 @@ public class MainWindowViewModel : BindableBase, IDisposable
     private readonly IFeedItemRepository feedItemRepository;
     private readonly IFeedSyncService feedSyncService;
     private bool isLoading;
-    private int ngFilteredCount;
 
     public MainWindowViewModel()
     {
@@ -64,8 +63,6 @@ public class MainWindowViewModel : BindableBase, IDisposable
     public string Title => appVersionInfo.Title;
 
     public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
-
-    public int NgFilteredCount { get => ngFilteredCount; private set => SetProperty(ref ngFilteredCount, value); }
 
     public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 

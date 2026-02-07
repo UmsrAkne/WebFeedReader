@@ -247,7 +247,7 @@
             Padding="5"
             Background="White">
             <StatusBarItem>
-                <TextBlock Text="{Binding NgFilteredCount, StringFormat=NG除外: {0} 件}" />
+                <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
