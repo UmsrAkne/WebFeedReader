@@ -10,7 +10,7 @@ using WebFeedReader.Utils;
 namespace WebFeedReader.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class MainWindowViewModel : BindableBase, IDisposable
+public class MainWindowViewModel : BindableBase, IScrollResettable, IDisposable
 {
     private readonly AppVersionInfo appVersionInfo = new ();
     private readonly AppSettings appSettings;
@@ -50,9 +50,12 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
+            RequestScrollReset?.Invoke();
             await FeedListViewModel.OnSourceSelectedAsync(source);
         };
     }
+
+    public event Action RequestScrollReset;
 
     public string Title => appVersionInfo.Title;
 

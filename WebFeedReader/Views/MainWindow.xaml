@@ -133,6 +133,7 @@
                     </ListBox.InputBindings>
                     <b:Interaction.Behaviors>
                         <behaviors:InfiniteScrollBehavior Threshold="20" />
+                        <behaviors:ScrollResetBehavior />
                     </b:Interaction.Behaviors>
 
                     <ListBox.ItemTemplate>
