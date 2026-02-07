@@ -65,6 +65,16 @@ namespace WebFeedReader.Dbs
             await db.SaveChangesAsync(ct);
         }
 
+        public IReadOnlyList<NgCheckResult> Check(IEnumerable<FeedItem> feeds, IReadOnlyList<string> ngWords)
+        {
+            return feeds.Select(f => new NgCheckResult
+            {
+                FeedId = f.Id,
+                IsNg = ContainsNgWord(f, ngWords),
+                Version = appSettings.NgWordListVersion,
+            }).ToList();
+        }
+
         private static bool ContainsNgWord(FeedItem feed, IReadOnlyList<string> ngWords)
         {
             return ngWords.Any(word => feed.Title.Contains(word) || feed.Summary.Contains(word));
