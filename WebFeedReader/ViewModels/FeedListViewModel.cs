@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Prism.Commands;
 using Prism.Mvvm;
 using WebFeedReader.Dbs;
 using WebFeedReader.Models;
@@ -42,6 +45,29 @@ namespace WebFeedReader.ViewModels
         }
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
+
+        public DelegateCommand<string> OpenUrlCommand => new (url =>
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return;
+            }
+
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true,
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        });
 
         public async Task UpdateItemsAsync(FeedSource source)
         {
