@@ -53,6 +53,7 @@ namespace WebFeedReader.Dbs
                                )
                                ON CONFLICT DO NOTHING;
                                """;
+
             await using var db = dbFactory();
             await db.Database.ExecuteSqlRawAsync(
                 sql,
@@ -62,7 +63,7 @@ namespace WebFeedReader.Dbs
                 new SqliteParameter("@SourceName", item.SourceName),
                 new SqliteParameter("@Title", item.Title),
                 new SqliteParameter("@Link", item.Link),
-                new SqliteParameter("@Published", (object?)item.Published ?? DBNull.Value),
+                new SqliteParameter("@Published", item.Published),
                 new SqliteParameter("@Summary", item.Summary),
                 new SqliteParameter("@Raw", item.Raw),
                 new SqliteParameter("@IsRead", item.IsRead),
