@@ -14,12 +14,17 @@ namespace WebFeedReader.ViewModels
     // ReSharper disable once ClassNeverInstantiated.Global
     public class FeedListViewModel : BindableBase
     {
+        private const int PageSize = 100;
+
         private readonly IFeedItemRepository repository;
         private readonly NgWordService ngWordService;
         private readonly List<FeedItem> readItems = new ();
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
         private int ngFilteredCount;
+        private int currentOffset;
+        private bool isLoading;
+        private bool hasMoreItems = true;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
@@ -79,10 +84,35 @@ namespace WebFeedReader.ViewModels
             System.Windows.Clipboard.SetText(param);
         });
 
-        public async Task UpdateItemsAsync(FeedSource source)
+        public async Task OnSourceSelectedAsync(FeedSource source)
         {
-            var list = await repository.GetBySourceIdAsync(source.Id);
+            currentOffset = 0;
+            hasMoreItems = true;
+            Items.Clear();
 
+            await LoadNextPageAsync(source);
+        }
+
+        public async Task LoadNextPageAsync(FeedSource source)
+        {
+            if (isLoading || !hasMoreItems)
+            {
+                return;
+            }
+
+            isLoading = true;
+
+            var list =
+                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize);
+
+            if (list.Count == 0)
+            {
+                hasMoreItems = false;
+                isLoading = false;
+                return;
+            }
+
+            // NG チェック
             var checkResults = await ngWordService.Check(list);
             await repository.ApplyNgCheckResultsAsync(checkResults);
 
@@ -91,14 +121,22 @@ namespace WebFeedReader.ViewModels
                 list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
             }
 
-            NgFilteredCount = list.Count(f => f.IsNg);
+            var visibleItems = list.Where(f => !f.IsNg);
 
-            Items = new ObservableCollection<FeedItem>(list.Where(f => !f.IsNg));
+            foreach (var item in visibleItems)
+            {
+                Items.Add(item);
+            }
+
+            NgFilteredCount += list.Count(f => f.IsNg);
+
+            currentOffset += list.Count;
+            System.Console.WriteLine($"LoadNextPageAsync: {Items.Count}");
 
             await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
             readItems.Clear();
 
-            System.Console.WriteLine($"UpdateItemsAsync: {source.Name}");
+            isLoading = false;
         }
     }
 }
