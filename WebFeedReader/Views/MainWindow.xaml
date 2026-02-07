@@ -140,7 +140,7 @@
                                 </Style>
                             </DataTemplate.Resources>
 
-                            <ContentControl>
+                            <ContentControl FocusVisualStyle="{x:Null}">
                                 <b:Interaction.Triggers>
                                     <b:EventTrigger EventName="MouseDoubleClick">
                                         <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.OpenUrlCommand}" CommandParameter="{Binding Link}" />
@@ -159,7 +159,7 @@
                                         Grid.Column="0"
                                         Width="5"
                                         Margin="0,0,5,0"
-                                        CornerRadius="4">
+                                        CornerRadius="3">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Setter Property="Background" Value="Orange" />
@@ -207,7 +207,11 @@
                                     <ControlTemplate TargetType="ListBoxItem">
                                         <Border
                                             x:Name="Bd"
+                                            Padding="{TemplateBinding Padding}"
                                             Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4"
                                             SnapsToDevicePixels="True">
 
                                             <ContentPresenter
@@ -226,7 +230,6 @@
                                             <!-- 選択中 -->
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Background" Value="#334A90E2" />
-                                                <Setter Property="BorderThickness" Value="3" />
                                             </Trigger>
 
                                             <!-- 非アクティブ時の選択 -->
