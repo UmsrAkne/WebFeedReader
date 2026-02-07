@@ -25,7 +25,7 @@ public class MainWindowViewModel : BindableBase, IDisposable
 
     public MainWindowViewModel()
     {
-        FeedListViewModel = new FeedListViewModel(null);
+        FeedListViewModel = new FeedListViewModel(null, null);
 
         var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
         FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));

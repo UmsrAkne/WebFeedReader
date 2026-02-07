@@ -12,13 +12,15 @@ namespace WebFeedReader.ViewModels
     public class FeedListViewModel : BindableBase
     {
         private readonly IFeedItemRepository repository;
+        private readonly NgWordService ngWordService;
         private readonly List<FeedItem> readItems = new ();
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
 
-        public FeedListViewModel(IFeedItemRepository repository)
+        public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
             this.repository = repository;
+            this.ngWordService = ngWordService;
         }
 
         public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
