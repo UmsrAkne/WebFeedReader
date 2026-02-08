@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using Prism.Ioc;
+using Serilog;
 using WebFeedReader.Api;
 using WebFeedReader.Dbs;
 using WebFeedReader.Utils;
@@ -56,6 +57,16 @@ public partial class App
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        var baseDir = AppContext.BaseDirectory;
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .WriteTo.File(
+                path: Path.Combine(baseDir, "logs", "app-.log"),
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7)
+            .CreateLogger();
 
         var context = Container.Resolve<AppDbContext>();
         DatabaseInitializer.EnsureDatabase(context);
