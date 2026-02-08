@@ -76,7 +76,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
 
-            appSettings.LastFeedsUpdate = DateTime.Now;
+            appSettings.LastFeedsUpdate = DateTimeOffset.UtcNow;
             appSettings.Save();
         }
         catch (Exception e)

@@ -17,7 +17,7 @@ namespace WebFeedReader.Api
             this.repository = repository;
         }
 
-        public async Task SyncAsync(DateTime since)
+        public async Task SyncAsync(DateTimeOffset since)
         {
             var json = await apiClient.GetFeedsAsync(since);
             json = DateTimeFormatFixer.FixDateTimeFormat(json);

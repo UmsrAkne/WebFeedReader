@@ -9,7 +9,7 @@ namespace WebFeedReader.Api
     // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class DummyApiClient : IApiClient
     {
-        public Task<string> GetFeedsAsync(DateTime since, CancellationToken ct = default)
+        public Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {
             var items = Enumerable.Range(1, 100)
                 .Select(i => new
@@ -32,7 +32,7 @@ namespace WebFeedReader.Api
             return Task.FromResult(json);
         }
 
-        public Task<string> GetSourcesAsync(DateTime since, CancellationToken ct = default)
+        public Task<string> GetSourcesAsync(DateTimeOffset since, CancellationToken ct = default)
         {
             var sources = Enumerable.Range(1, 10)
                 .Select(i => new
