@@ -5,6 +5,6 @@ namespace WebFeedReader.Api
 {
     public interface IFeedSyncService
     {
-        Task SyncAsync(DateTime since);
+        Task SyncAsync(DateTimeOffset since);
     }
 }

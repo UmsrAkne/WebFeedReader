@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
 using WebFeedReader.Utils;
@@ -17,7 +18,7 @@ namespace WebFeedReader.Api
             this.repository = repository;
         }
 
-        public async Task SyncAsync(DateTime since)
+        public async Task SyncAsync(DateTimeOffset since)
         {
             var json = await apiClient.GetFeedsAsync(since);
             json = DateTimeFormatFixer.FixDateTimeFormat(json);
@@ -27,6 +28,8 @@ namespace WebFeedReader.Api
             {
                 await repository.UpsertAsync(feed);
             }
+
+            Log.Information("Feeds synced. {@feedInfo}", new { feeds.Count, });
         }
     }
 }

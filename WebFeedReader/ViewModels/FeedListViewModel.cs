@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Mvvm;
+using Serilog;
 using WebFeedReader.Dbs;
 using WebFeedReader.Models;
 
@@ -131,7 +132,14 @@ namespace WebFeedReader.ViewModels
             NgFilteredCount += list.Count(f => f.IsNg);
 
             currentOffset += list.Count;
-            System.Console.WriteLine($"LoadNextPageAsync: {Items.Count}");
+            Log.Information(
+                "Loaded {@PageInfo}",
+                new
+                {
+                    VisibleCount = Items.Count,
+                    NgFilteredCount,
+                    Offset = currentOffset,
+                });
 
             await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
             readItems.Clear();

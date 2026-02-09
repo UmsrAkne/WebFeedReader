@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
+using Serilog;
 using WebFeedReader.Api;
 using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
@@ -62,30 +64,47 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public FeedListViewModel FeedListViewModel { get; private set; }
 
+    public AsyncRelayCommand ReloadAsyncCommand => new (async () => await ReloadAsync());
+
     public async Task InitializeAsync()
     {
         IsLoading = true;
-
         try
         {
-            var since = appSettings.LastFeedsUpdate;
-
-            await feedSourceSyncService.SyncAsync(since);
-            await feedSyncService.SyncAsync(since);
+            await SyncFeedsAsync(appSettings.LastFeedsUpdate);
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
-
-            appSettings.LastFeedsUpdate = DateTime.Now;
-            appSettings.Save();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
         }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    private async Task ReloadAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            await SyncFeedsAsync(appSettings.LastFeedsUpdate);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to reload feeds");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task SyncFeedsAsync(DateTimeOffset since)
+    {
+        await feedSourceSyncService.SyncAsync(since);
+        await feedSyncService.SyncAsync(since);
+
+        appSettings.LastFeedsUpdate = DateTimeOffset.UtcNow;
+        appSettings.Save();
     }
 }

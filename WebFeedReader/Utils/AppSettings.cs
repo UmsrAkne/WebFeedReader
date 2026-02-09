@@ -8,7 +8,8 @@
     public sealed class AppSettings
     {
         // ReSharper disable once ArrangeModifiersOrder
-        public static readonly DateTime InitialFeedsUpdate = new(2000, 1, 1);
+        public static readonly DateTimeOffset InitialFeedsUpdate
+            = new (2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
         public string ApiBaseUrl { get; set; } = "http://localhost:8000";
 
@@ -18,7 +19,7 @@
 
         public string SshUserName { get; set; }
 
-        public DateTime LastFeedsUpdate { get; set; } = InitialFeedsUpdate;
+        public DateTimeOffset LastFeedsUpdate { get; set; } = InitialFeedsUpdate;
 
         public int NgWordListVersion { get; set; }
 

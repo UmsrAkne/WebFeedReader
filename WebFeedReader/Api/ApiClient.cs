@@ -25,7 +25,7 @@ namespace WebFeedReader.Api
             this.appSettings = appSettings;
         }
 
-        public async Task<string> GetFeedsAsync(DateTime since, CancellationToken ct = default)
+        public async Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {
             EnsureSshTunnel();
 
@@ -35,7 +35,7 @@ namespace WebFeedReader.Api
             return await GetAsync(url, ct);
         }
 
-        public async Task<string> GetSourcesAsync(DateTime since, CancellationToken ct = default)
+        public async Task<string> GetSourcesAsync(DateTimeOffset since, CancellationToken ct = default)
         {
             EnsureSshTunnel();
 
@@ -63,9 +63,9 @@ namespace WebFeedReader.Api
             httpClient.Dispose();
         }
 
-        private static string FormatDateTime(DateTime dt)
+        private static string FormatDateTime(DateTimeOffset dt)
         {
-            return dt.ToString("yyyy-MM-dd HH:mm:ss");
+            return dt.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private void EnsureSshTunnel()
