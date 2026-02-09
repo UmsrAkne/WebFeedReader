@@ -65,27 +65,38 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     public async Task InitializeAsync()
     {
         IsLoading = true;
-
         try
         {
-            var since = appSettings.LastFeedsUpdate;
-
-            await feedSourceSyncService.SyncAsync(since);
-            await feedSyncService.SyncAsync(since);
+            await SyncFeedsAsync(appSettings.LastFeedsUpdate);
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
-
-            appSettings.LastFeedsUpdate = DateTimeOffset.UtcNow;
-            appSettings.Save();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
         }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    public async Task ReloadAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            await SyncFeedsAsync(appSettings.LastFeedsUpdate);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task SyncFeedsAsync(DateTimeOffset since)
+    {
+        await feedSourceSyncService.SyncAsync(since);
+        await feedSyncService.SyncAsync(since);
+
+        appSettings.LastFeedsUpdate = DateTimeOffset.UtcNow;
+        appSettings.Save();
     }
 }
