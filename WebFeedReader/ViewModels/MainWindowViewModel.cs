@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
+using Serilog;
 using WebFeedReader.Api;
 using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
@@ -62,6 +64,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public FeedListViewModel FeedListViewModel { get; private set; }
 
+    public AsyncRelayCommand ReloadAsyncCommand => new (async () => await ReloadAsync());
+
     public async Task InitializeAsync()
     {
         IsLoading = true;
@@ -78,12 +82,16 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         }
     }
 
-    public async Task ReloadAsync()
+    private async Task ReloadAsync()
     {
         IsLoading = true;
         try
         {
             await SyncFeedsAsync(appSettings.LastFeedsUpdate);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to reload feeds");
         }
         finally
         {

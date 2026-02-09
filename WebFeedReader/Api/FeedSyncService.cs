@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 using WebFeedReader.Dbs;
 using WebFeedReader.Factories;
 using WebFeedReader.Utils;
@@ -27,6 +28,8 @@ namespace WebFeedReader.Api
             {
                 await repository.UpsertAsync(feed);
             }
+
+            Log.Information("Feeds synced. {@feedInfo}", new { feeds.Count, });
         }
     }
 }

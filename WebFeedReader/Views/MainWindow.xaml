@@ -46,7 +46,16 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Background="White" />
+            Padding="3"
+            Background="White">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Padding="4"
+                    Command="{Binding ReloadAsyncCommand}"
+                    Content="Reload" />
+            </StackPanel>
+        </StatusBar>
 
         <Border
             Grid.Row="1"
