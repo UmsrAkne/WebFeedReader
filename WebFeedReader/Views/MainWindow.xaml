@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:behaviors="clr-namespace:WebFeedReader.Behaviors"
+    xmlns:converters="clr-namespace:WebFeedReader.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:WebFeedReader.Models"
@@ -21,6 +22,7 @@
     <Window.Resources>
         <SolidColorBrush x:Key="LightBorderBrush" Color="LightSlateGray" />
         <system:Double x:Key="CommonFontSize">15</system:Double>
+        <converters:UtcToJstConverter x:Key="UtcToJstConverter" />
     </Window.Resources>
 
     <Grid>
@@ -199,7 +201,7 @@
                                     <TextBlock
                                         Grid.Column="3"
                                         Width="120"
-                                        Text="{Binding Published, StringFormat=yyyy/MM/dd HH:mm}"
+                                        Text="{Binding Published, Converter={StaticResource UtcToJstConverter}}"
                                         TextAlignment="Right" />
                                 </Grid>
 
