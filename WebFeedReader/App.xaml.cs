@@ -44,6 +44,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
         containerRegistry.Register<FeedListViewModel>();
+        containerRegistry.Register<SettingPageViewModel>();
 
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();

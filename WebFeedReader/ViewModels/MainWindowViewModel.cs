@@ -32,6 +32,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         FeedSourceListViewModel.Items.AddRange(FeedSourceFactory.FromJson(sourcesJson.Result));
 
         FeedListViewModel.SelectedItem = FeedListViewModel.Items[0];
+
+        SettingPageViewModel = new SettingPageViewModel(null);
     }
 
     public MainWindowViewModel(
@@ -39,13 +41,15 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedSyncService feedSyncService,
-        FeedListViewModel feedListViewModel)
+        FeedListViewModel feedListViewModel,
+        SettingPageViewModel settingPageViewModel)
     {
         this.appSettings = appSettings;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
         FeedListViewModel = feedListViewModel;
+        SettingPageViewModel = settingPageViewModel;
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
@@ -63,6 +67,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
 
     public FeedListViewModel FeedListViewModel { get; private set; }
+
+    public SettingPageViewModel SettingPageViewModel { get; }
 
     public AsyncRelayCommand ReloadAsyncCommand => new (async () => await ReloadAsync());
 

@@ -4,12 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:behaviors="clr-namespace:WebFeedReader.Behaviors"
+    xmlns:converters="clr-namespace:WebFeedReader.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:WebFeedReader.Models"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
+    xmlns:views="clr-namespace:WebFeedReader.Views"
     Title="{Binding Title}"
     Width="800"
     Height="400"
@@ -21,277 +23,291 @@
     <Window.Resources>
         <SolidColorBrush x:Key="LightBorderBrush" Color="LightSlateGray" />
         <system:Double x:Key="CommonFontSize">15</system:Double>
+        <converters:UtcToJstConverter x:Key="UtcToJstConverter" />
     </Window.Resources>
 
-    <Grid>
-        <Grid.Resources>
-            <Style TargetType="TextBlock">
-                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
-            </Style>
-        </Grid.Resources>
-
-        <Grid.RowDefinitions>
-            <RowDefinition Height="80" />
-            <RowDefinition />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-
-        <StatusBar
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Padding="3"
-            Background="White">
-            <StackPanel Orientation="Horizontal">
-                <Button
-                    Width="150"
-                    Padding="4"
-                    Command="{Binding ReloadAsyncCommand}"
-                    Content="Reload" />
-            </StackPanel>
-        </StatusBar>
-
-        <Border
-            Grid.Row="1"
-            Grid.Column="0"
-            Margin="5"
-            Padding="3"
-            BorderBrush="{StaticResource LightBorderBrush}"
-            BorderThickness="1"
-            CornerRadius="5">
-
-            <ListBox
-                BorderThickness="0"
-                ItemsSource="{Binding FeedSourceListViewModel.Items}"
-                SelectedItem="{Binding FeedSourceListViewModel.SelectedItem}">
-
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:FeedSource}">
-                        <DataTemplate.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
-                            </Style>
-                        </DataTemplate.Resources>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}" />
-                        <Setter Property="BorderThickness" Value="0,0.5,0,0.5" />
-                        <Setter Property="Padding" Value="5" />
+    <TabControl>
+        <TabItem Padding="15,4">
+            <TabItem.Header>
+                <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Main" />
+            </TabItem.Header>
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
                     </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
-        </Border>
+                </Grid.Resources>
 
-        <Border
-            Grid.Row="1"
-            Grid.Column="1"
-            Width="8"
-            Background="LightGray"
-            CornerRadius="3" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80" />
+                    <RowDefinition />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
 
-        <GridSplitter
-            Grid.Row="1"
-            Grid.Column="1"
-            Width="8"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Stretch"
-            Background="Transparent" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="1" Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="120" />
-            </Grid.RowDefinitions>
-
-            <Border
-                Margin="5"
-                Padding="3"
-                BorderBrush="{StaticResource LightBorderBrush}"
-                BorderThickness="0.5"
-                CornerRadius="5">
-                <ListBox
-                    HorizontalContentAlignment="Stretch"
-                    BorderThickness="0"
-                    ItemsSource="{Binding FeedListViewModel.Items}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    SelectedItem="{Binding FeedListViewModel.SelectedItem}">
-                    <ListBox.InputBindings>
-                        <KeyBinding
-                            Key="C"
-                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
-                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Title}"
-                            Modifiers="Control" />
-
-                        <KeyBinding
-                            Key="C"
-                            Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
-                            CommandParameter="{Binding FeedListViewModel.SelectedItem.Summary}"
-                            Modifiers="Control+Shift" />
-                    </ListBox.InputBindings>
-                    <b:Interaction.Behaviors>
-                        <behaviors:InfiniteScrollBehavior Threshold="20" />
-                        <behaviors:ScrollResetBehavior />
-                    </b:Interaction.Behaviors>
-
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:FeedItem}">
-                            <DataTemplate.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                </Style>
-                            </DataTemplate.Resources>
-
-                            <ContentControl FocusVisualStyle="{x:Null}">
-                                <b:Interaction.Triggers>
-                                    <b:EventTrigger EventName="MouseDoubleClick">
-                                        <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.OpenUrlCommand}" CommandParameter="{Binding Link}" />
-                                    </b:EventTrigger>
-                                </b:Interaction.Triggers>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border
-                                        Grid.Column="0"
-                                        Width="5"
-                                        Margin="0,0,5,0"
-                                        CornerRadius="3">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Background" Value="Orange" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRead}" Value="True">
-                                                        <Setter Property="Background" Value="Transparent" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Width="20"
-                                        Foreground="LightGray"
-                                        Text="★" />
-                                    <TextBlock
-                                        Grid.Column="2"
-                                        Text="{Binding Title}"
-                                        TextTrimming="CharacterEllipsis"
-                                        TextWrapping="NoWrap" />
-                                    <TextBlock
-                                        Grid.Column="3"
-                                        Width="120"
-                                        Text="{Binding Published, StringFormat=yyyy/MM/dd HH:mm}"
-                                        TextAlignment="Right" />
-                                </Grid>
-
-                            </ContentControl>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <!-- 基本 -->
-                            <Setter Property="Padding" Value="6,4" />
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="VerticalContentAlignment" Value="Center" />
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="BorderThickness" Value="0" />
-
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border
-                                            x:Name="Bd"
-                                            Padding="{TemplateBinding Padding}"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="4"
-                                            SnapsToDevicePixels="True">
-
-                                            <ContentPresenter
-                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                SnapsToDevicePixels="True" />
-                                        </Border>
-
-                                        <ControlTemplate.Triggers>
-
-                                            <!-- マウスオーバー -->
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="WhiteSmoke" />
-                                            </Trigger>
-
-                                            <!-- 選択中 -->
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="#334A90E2" />
-                                            </Trigger>
-
-                                            <!-- 非アクティブ時の選択 -->
-                                            <MultiTrigger>
-                                                <MultiTrigger.Conditions>
-                                                    <Condition Property="IsSelected" Value="True" />
-                                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
-                                                </MultiTrigger.Conditions>
-                                                <Setter TargetName="Bd" Property="Background" Value="#224A90E2" />
-                                            </MultiTrigger>
-
-                                            <!-- 無効化 -->
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Opacity" Value="0.5" />
-                                            </Trigger>
-
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
-            </Border>
-
-            <Border
-                Grid.Row="1"
-                Margin="5"
-                BorderBrush="{StaticResource LightBorderBrush}"
-                BorderThickness="1"
-                CornerRadius="5">
-                <TextBlock
+                <StatusBar
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
                     Padding="3"
-                    Text="{Binding FeedListViewModel.SelectedItem.Summary}"
-                    TextWrapping="Wrap" />
-            </Border>
-        </Grid>
+                    Background="White">
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Width="150"
+                            Padding="4"
+                            Command="{Binding ReloadAsyncCommand}"
+                            Content="Reload" />
+                    </StackPanel>
+                </StatusBar>
 
-        <StatusBar
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Padding="5"
-            Background="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
-            </StatusBarItem>
-        </StatusBar>
-    </Grid>
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="5"
+                    Padding="3"
+                    BorderBrush="{StaticResource LightBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="5">
+
+                    <ListBox
+                        BorderThickness="0"
+                        ItemsSource="{Binding FeedSourceListViewModel.Items}"
+                        SelectedItem="{Binding FeedSourceListViewModel.SelectedItem}">
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:FeedSource}">
+                                <DataTemplate.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                                    </Style>
+                                </DataTemplate.Resources>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}" />
+                                <Setter Property="BorderThickness" Value="0,0.5,0,0.5" />
+                                <Setter Property="Padding" Value="5" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Border>
+
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="8"
+                    Background="LightGray"
+                    CornerRadius="3" />
+
+                <GridSplitter
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="8"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Background="Transparent" />
+
+                <Grid Grid.Row="1" Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="120" />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        Margin="5"
+                        Padding="3"
+                        BorderBrush="{StaticResource LightBorderBrush}"
+                        BorderThickness="0.5"
+                        CornerRadius="5">
+                        <ListBox
+                            HorizontalContentAlignment="Stretch"
+                            BorderThickness="0"
+                            ItemsSource="{Binding FeedListViewModel.Items}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            SelectedItem="{Binding FeedListViewModel.SelectedItem}">
+                            <ListBox.InputBindings>
+                                <KeyBinding
+                                    Key="C"
+                                    Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                                    CommandParameter="{Binding FeedListViewModel.SelectedItem.Title}"
+                                    Modifiers="Control" />
+
+                                <KeyBinding
+                                    Key="C"
+                                    Command="{Binding FeedListViewModel.CopyToClipboardCommand}"
+                                    CommandParameter="{Binding FeedListViewModel.SelectedItem.Summary}"
+                                    Modifiers="Control+Shift" />
+                            </ListBox.InputBindings>
+                            <b:Interaction.Behaviors>
+                                <behaviors:InfiniteScrollBehavior Threshold="20" />
+                                <behaviors:ScrollResetBehavior />
+                            </b:Interaction.Behaviors>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:FeedItem}">
+                                    <DataTemplate.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                        </Style>
+                                    </DataTemplate.Resources>
+
+                                    <ContentControl FocusVisualStyle="{x:Null}">
+                                        <b:Interaction.Triggers>
+                                            <b:EventTrigger EventName="MouseDoubleClick">
+                                                <b:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.OpenUrlCommand}" CommandParameter="{Binding Link}" />
+                                            </b:EventTrigger>
+                                        </b:Interaction.Triggers>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border
+                                                Grid.Column="0"
+                                                Width="5"
+                                                Margin="0,0,5,0"
+                                                CornerRadius="3">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="Orange" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRead}" Value="True">
+                                                                <Setter Property="Background" Value="Transparent" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Width="20"
+                                                Foreground="LightGray"
+                                                Text="★" />
+                                            <TextBlock
+                                                Grid.Column="2"
+                                                Text="{Binding Title}"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="NoWrap" />
+                                            <TextBlock
+                                                Grid.Column="3"
+                                                Width="120"
+                                                Text="{Binding Published, Converter={StaticResource UtcToJstConverter}}"
+                                                TextAlignment="Right" />
+                                        </Grid>
+
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <!-- 基本 -->
+                                    <Setter Property="Padding" Value="6,4" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="BorderThickness" Value="0" />
+
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border
+                                                    x:Name="Bd"
+                                                    Padding="{TemplateBinding Padding}"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="4"
+                                                    SnapsToDevicePixels="True">
+
+                                                    <ContentPresenter
+                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                        SnapsToDevicePixels="True" />
+                                                </Border>
+
+                                                <ControlTemplate.Triggers>
+
+                                                    <!-- マウスオーバー -->
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="WhiteSmoke" />
+                                                    </Trigger>
+
+                                                    <!-- 選択中 -->
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter Property="Background" Value="#334A90E2" />
+                                                    </Trigger>
+
+                                                    <!-- 非アクティブ時の選択 -->
+                                                    <MultiTrigger>
+                                                        <MultiTrigger.Conditions>
+                                                            <Condition Property="IsSelected" Value="True" />
+                                                            <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter TargetName="Bd" Property="Background" Value="#224A90E2" />
+                                                    </MultiTrigger>
+
+                                                    <!-- 無効化 -->
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                    </Trigger>
+
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </Border>
+
+                    <Border
+                        Grid.Row="1"
+                        Margin="5"
+                        BorderBrush="{StaticResource LightBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="5">
+                        <TextBlock
+                            Padding="3"
+                            Text="{Binding FeedListViewModel.SelectedItem.Summary}"
+                            TextWrapping="Wrap" />
+                    </Border>
+                </Grid>
+
+                <StatusBar
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Padding="5"
+                    Background="White">
+                    <StatusBarItem>
+                        <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
+                    </StatusBarItem>
+                </StatusBar>
+            </Grid>
+        </TabItem>
+        <TabItem Padding="15,4">
+            <TabItem.Header>
+                <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Setting" />
+            </TabItem.Header>
+            <views:SettingPage />
+        </TabItem>
+    </TabControl>
 
 </Window>

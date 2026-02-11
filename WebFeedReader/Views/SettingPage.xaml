@@ -1,0 +1,81 @@
+﻿<UserControl
+    x:Class="WebFeedReader.Views.SettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
+    d:DataContext="{d:DesignInstance viewModels:SettingPageViewModel}"
+    d:DesignWidth="460"
+    mc:Ignorable="d">
+    <Grid Margin="8">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="8,2" />
+                <Setter Property="Width" Value="140" />
+            </Style>
+
+            <Style TargetType="TextBox">
+                <Setter Property="Margin" Value="0,2" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="ApiBaseUrl" />
+                <TextBox DockPanel.Dock="Right" Text="{Binding ApiBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+
+
+            <!-- Editable fields -->
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="FetchIntervalMinutes" />
+                <TextBox DockPanel.Dock="Right" Text="{Binding FetchIntervalMinutes, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="EnableDebugLog" />
+                <CheckBox VerticalAlignment="Center" IsChecked="{Binding EnableDebugLog}" />
+            </DockPanel>
+
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="SshUserName" />
+                <TextBox DockPanel.Dock="Right" Text="{Binding SshUserName, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+
+            <Separator Margin="0,4,0,8" />
+
+            <!-- View-only fields -->
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="LastFeedsUpdate" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LastFeedsUpdate}" />
+            </DockPanel>
+
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="NgWordListVersion" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding NgWordListVersion}" />
+            </DockPanel>
+
+            <!-- Footer -->
+            <Button
+                Width="150"
+                Margin="0,10,0,0"
+                Padding="8,4"
+                HorizontalAlignment="Right"
+                Command="{Binding SaveCommand}"
+                Content="Save" />
+        </StackPanel>
+    </Grid>
+</UserControl>
