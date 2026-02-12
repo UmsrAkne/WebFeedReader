@@ -13,9 +13,8 @@ namespace WebFeedReader.Converters
                 return Binding.DoNothing;
             }
 
-            // DateTimeOffset.ToLocalTime() は OS のタイムゾーンを使う
-            var local = dto.ToLocalTime();
-
+            // 入力される日時が UTC だと仮定し、強制的に JST に変換して表示する。
+            var local = dto.AddHours(9);
             return local.ToString("yyyy/MM/dd HH:mm", culture);
         }
 
