@@ -306,7 +306,7 @@
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Setting" />
             </TabItem.Header>
-            <views:SettingPage />
+            <views:SettingPage DataContext="{Binding SettingPageViewModel}" />
         </TabItem>
     </TabControl>
 
