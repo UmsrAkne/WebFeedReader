@@ -177,18 +177,32 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
+                                            <!-- 未読マーク -->
                                             <Border
                                                 Grid.Column="0"
                                                 Width="5"
                                                 Margin="0,0,5,0"
+                                                Background="Orange"
                                                 CornerRadius="3">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="Orange" />
+                                                        <Setter Property="Opacity" Value="1" />
+
                                                         <Style.Triggers>
+                                                            <!-- 既読になったとき：フェードアウト -->
                                                             <DataTrigger Binding="{Binding IsRead}" Value="True">
-                                                                <Setter Property="Background" Value="Transparent" />
+                                                                <DataTrigger.EnterActions>
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation
+                                                                                Storyboard.TargetProperty="Opacity"
+                                                                                To="0"
+                                                                                Duration="0:0:0.15" />
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </DataTrigger.EnterActions>
                                                             </DataTrigger>
+
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
@@ -223,6 +237,7 @@
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
                                     <Setter Property="Background" Value="Transparent" />
                                     <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
 
                                     <Setter Property="Template">
                                         <Setter.Value>
@@ -306,7 +321,7 @@
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Setting" />
             </TabItem.Header>
-            <views:SettingPage />
+            <views:SettingPage DataContext="{Binding SettingPageViewModel}" />
         </TabItem>
     </TabControl>
 
