@@ -145,6 +145,12 @@ namespace WebFeedReader.ViewModels
             readItems.Clear();
 
             isLoading = false;
+
+            var lineNumber = 0;
+            foreach (var feedItem in Items)
+            {
+                feedItem.LineNumber = ++lineNumber;
+            }
         }
     }
 }
