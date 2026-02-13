@@ -244,7 +244,7 @@
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
                                     <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="BorderThickness" Value="2" />
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
 
                                     <Setter Property="Template">
@@ -270,11 +270,13 @@
                                                     <!-- マウスオーバー -->
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter Property="Background" Value="WhiteSmoke" />
+                                                        <Setter Property="BorderBrush" Value="WhiteSmoke" />
                                                     </Trigger>
 
                                                     <!-- 選択中 -->
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter Property="Background" Value="#334A90E2" />
+                                                        <Setter Property="BorderBrush" Value="LightBlue" />
                                                     </Trigger>
 
                                                     <!-- 非アクティブ時の選択 -->
