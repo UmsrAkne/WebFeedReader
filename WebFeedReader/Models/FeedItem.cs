@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using Prism.Mvvm;
 
 namespace WebFeedReader.Models;
@@ -10,6 +9,7 @@ public sealed class FeedItem : BindableBase
 {
     private bool isNg;
     private bool isRead;
+    private int lineNumber;
 
     public int Id { get; set; }
 
@@ -44,4 +44,7 @@ public sealed class FeedItem : BindableBase
     public int NgWordCheckVersion { get; set; }
 
     public bool IsNg { get => isNg; set => SetProperty(ref isNg, value); }
+
+    [NotMapped]
+    public int LineNumber { get => lineNumber; set => SetProperty(ref lineNumber, value); }
 }
