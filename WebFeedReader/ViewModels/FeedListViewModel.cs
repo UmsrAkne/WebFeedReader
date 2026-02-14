@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
 using Serilog;
@@ -83,6 +84,17 @@ namespace WebFeedReader.ViewModels
             }
 
             System.Windows.Clipboard.SetText(param);
+        });
+
+        public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
+        {
+            if (param == null)
+            {
+                return;
+            }
+
+            param.IsFavorite = !param.IsFavorite;
+            await repository.MarkAsFavoriteAsync(param.Key, param.IsFavorite);
         });
 
         public async Task OnSourceSelectedAsync(FeedSource source)

@@ -137,6 +137,22 @@ namespace WebFeedReader.Dbs
             }
         }
 
+        public async Task MarkAsFavoriteAsync(string key, bool isFavorite)
+        {
+            await using var db = dbFactory();
+
+            var item = await db.FeedItems.FirstOrDefaultAsync(f => f.Key == key);
+
+            if (item == null)
+            {
+                return;
+            }
+
+            item.IsFavorite = isFavorite;
+
+            await db.SaveChangesAsync();
+        }
+
         public async Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results)
         {
             var resultList = results.ToList();
