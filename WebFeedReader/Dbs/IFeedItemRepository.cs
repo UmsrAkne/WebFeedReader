@@ -16,6 +16,8 @@ namespace WebFeedReader.Dbs
 
         Task MarkAsReadAsync(IEnumerable<string> keys);
 
+        Task MarkAsFavoriteAsync(string key, bool isFavorite);
+
         Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results);
     }
 }

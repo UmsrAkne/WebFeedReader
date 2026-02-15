@@ -10,6 +10,7 @@ public sealed class FeedItem : BindableBase
     private bool isNg;
     private bool isRead;
     private int lineNumber;
+    private bool isFavorite;
 
     public int Id { get; set; }
 
@@ -39,7 +40,7 @@ public sealed class FeedItem : BindableBase
 
     public bool IsRead { get => isRead; set => SetProperty(ref isRead, value); }
 
-    public bool IsFavorite { get; set; }
+    public bool IsFavorite { get => isFavorite; set => SetProperty(ref isFavorite, value); }
 
     public int NgWordCheckVersion { get; set; }
 
