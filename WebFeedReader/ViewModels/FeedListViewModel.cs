@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -27,14 +29,18 @@ namespace WebFeedReader.ViewModels
         private int currentOffset;
         private bool isLoading;
         private bool hasMoreItems = true;
+        private bool isUnreadOnly;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
+            CollectionView = CollectionViewSource.GetDefaultView(Items);
         }
 
         public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
+
+        public ICollectionView CollectionView { get; set; }
 
         public FeedItem SelectedItem
         {
@@ -48,6 +54,18 @@ namespace WebFeedReader.ViewModels
                 }
 
                 SetProperty(ref selectedItem, value);
+            }
+        }
+
+        public bool IsUnreadOnly
+        {
+            get => isUnreadOnly;
+            set
+            {
+                if (SetProperty(ref isUnreadOnly, value))
+                {
+                    RaisePropertyChanged(nameof(ToggleFilterCommand));
+                }
             }
         }
 
@@ -84,6 +102,28 @@ namespace WebFeedReader.ViewModels
             }
 
             System.Windows.Clipboard.SetText(param);
+        });
+
+        public DelegateCommand ToggleFilterCommand => new (() =>
+        {
+            CollectionView.Filter = Filter;
+            CollectionView.Refresh();
+            return;
+
+            bool Filter(object obj)
+            {
+                if (obj is not FeedItem item)
+                {
+                    return false;
+                }
+
+                if (IsUnreadOnly)
+                {
+                    return !item.IsRead;
+                }
+
+                return true;
+            }
         });
 
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
