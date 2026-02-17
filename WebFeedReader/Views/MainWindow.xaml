@@ -300,26 +300,90 @@
 
                                                     <!-- マウスオーバー -->
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="WhiteSmoke" />
-                                                        <Setter Property="BorderBrush" Value="WhiteSmoke" />
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                        To="WhiteSmoke"
+                                                                        Duration="0:0:0.1" />
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                                        To="WhiteSmoke"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.EnterActions>
+
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                        To="White"
+                                                                        Duration="0:0:0.1" />
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                                        To="White"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.ExitActions>
                                                     </Trigger>
 
                                                     <!-- 選択中 -->
                                                     <Trigger Property="IsSelected" Value="True">
-                                                        <Setter Property="Background" Value="#334A90E2" />
-                                                        <Setter Property="BorderBrush" Value="LightBlue" />
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                        To="#334A90E2"
+                                                                        Duration="0:0:0.1" />
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                                        To="LightBlue"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.EnterActions>
+
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        FillBehavior="Stop"
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                        To="White"
+                                                                        Duration="0:0:0.1" />
+                                                                    <ColorAnimation
+                                                                        FillBehavior="Stop"
+                                                                        Storyboard.TargetName="Bd"
+                                                                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                                        To="White"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.ExitActions>
                                                     </Trigger>
 
-                                                    <!-- 非アクティブ時の選択 -->
+                                                    <!-- 非アクティブ選択 -->
                                                     <MultiTrigger>
                                                         <MultiTrigger.Conditions>
                                                             <Condition Property="IsSelected" Value="True" />
                                                             <Condition Property="Selector.IsSelectionActive" Value="False" />
                                                         </MultiTrigger.Conditions>
-                                                        <Setter TargetName="Bd" Property="Background" Value="#224A90E2" />
+                                                        <Setter TargetName="Bd" Property="Opacity" Value="0.8" />
                                                     </MultiTrigger>
 
-                                                    <!-- 無効化 -->
+                                                    <!-- 無効 -->
                                                     <Trigger Property="IsEnabled" Value="False">
                                                         <Setter Property="Opacity" Value="0.5" />
                                                     </Trigger>
