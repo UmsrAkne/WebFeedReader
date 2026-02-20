@@ -82,6 +82,10 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
         }
+        catch(Exception ex)
+        {
+            Log.Error(ex, "Failed to initial load feeds");
+        }
         finally
         {
             IsLoading = false;
