@@ -100,13 +100,14 @@ namespace WebFeedReader.Dbs
                 .ToList();
         }
 
-        public async Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit)
+        public async Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, bool unreadOnly = false)
         {
             await using var db = dbFactory();
 
             var items = await db.FeedItems
                 .AsNoTracking()
                 .Where(x => x.SourceId == sourceId)
+                .Where(x => unreadOnly ? !x.IsRead : true)
                 .ToListAsync();
 
             return items
