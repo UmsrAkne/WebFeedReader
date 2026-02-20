@@ -75,12 +75,24 @@ namespace WebFeedReader.Api
                 return;
             }
 
+            // SSHの挙動を制御するオプション群
+            var options = new[]
+            {
+                "-N", // コマンドを実行せず、ポート転送のみ行う
+                "-L 8000:127.0.0.1:8000",
+                "-o ConnectTimeout=5",          // 接続自体のタイムアウト（秒）
+                "-o ExitOnForwardFailure=yes",  // ポート転送に失敗（他が使用中など）したら即終了する ★重要
+                "-o ServerAliveInterval=15",    // 生存確認パケットを送り、無反応なら切断する
+                "-o StrictHostKeyChecking=no",  // ホストキーの確認で止まるのを防ぐ（環境による）
+            };
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = "ssh",
-                Arguments = $"-N -L 8000:127.0.0.1:8000 {appSettings.SshUserName}",
+                Arguments = $"{string.Join(" ", options)} {appSettings.SshUserName}",
                 UseShellExecute = false,
                 CreateNoWindow = true,
+                RedirectStandardError = true,
             };
 
             sshProcess = Process.Start(startInfo)
@@ -89,11 +101,23 @@ namespace WebFeedReader.Api
 
         private async Task<string> GetAsync(string url, CancellationToken ct)
         {
-            using var response = await httpClient.GetAsync(url, ct);
+            for (var i = 0; i < 3; i++)
+            {
+                try
+                {
+                    using var response = await httpClient.GetAsync(url, ct);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStringAsync(ct);
+                }
+                catch (HttpRequestException) when (i < 2)
+                {
+                    // トンネルが開通するのを少し待ってリトライ
+                    await Task.Delay(1000, ct);
+                    EnsureSshTunnel();
+                }
+            }
 
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync(ct);
+            throw new Exception("SSHトンネル経由での接続に失敗しました。");
         }
     }
 }
