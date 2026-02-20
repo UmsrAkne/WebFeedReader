@@ -67,7 +67,7 @@
                             Width="150"
                             Margin="10,0"
                             Padding="4"
-                            Command="{Binding FeedListViewModel.ToggleFilterCommand}"
+                            Command="{Binding FeedListViewModel.LoadAsyncCommand}"
                             Content="Filter (unread)"
                             IsChecked="{Binding FeedListViewModel.IsUnreadOnly}" />
                     </StackPanel>
@@ -140,7 +140,7 @@
                         <ListBox
                             HorizontalContentAlignment="Stretch"
                             BorderThickness="0"
-                            ItemsSource="{Binding FeedListViewModel.CollectionView}"
+                            ItemsSource="{Binding FeedListViewModel.Items}"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                             SelectedItem="{Binding FeedListViewModel.SelectedItem}">
                             <ListBox.InputBindings>

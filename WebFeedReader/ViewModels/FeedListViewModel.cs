@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -30,17 +28,15 @@ namespace WebFeedReader.ViewModels
         private bool isLoading;
         private bool hasMoreItems = true;
         private bool isUnreadOnly;
+        private FeedSource currentSource;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
-            CollectionView = CollectionViewSource.GetDefaultView(Items);
         }
 
         public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
-
-        public ICollectionView CollectionView { get; set; }
 
         public FeedItem SelectedItem
         {
@@ -60,13 +56,7 @@ namespace WebFeedReader.ViewModels
         public bool IsUnreadOnly
         {
             get => isUnreadOnly;
-            set
-            {
-                if (SetProperty(ref isUnreadOnly, value))
-                {
-                    RaisePropertyChanged(nameof(ToggleFilterCommand));
-                }
-            }
+            set => SetProperty(ref isUnreadOnly, value);
         }
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
@@ -104,28 +94,6 @@ namespace WebFeedReader.ViewModels
             System.Windows.Clipboard.SetText(param);
         });
 
-        public DelegateCommand ToggleFilterCommand => new (() =>
-        {
-            CollectionView.Filter = Filter;
-            CollectionView.Refresh();
-            return;
-
-            bool Filter(object obj)
-            {
-                if (obj is not FeedItem item)
-                {
-                    return false;
-                }
-
-                if (IsUnreadOnly)
-                {
-                    return !item.IsRead;
-                }
-
-                return true;
-            }
-        });
-
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
         {
             if (param == null)
@@ -135,6 +103,18 @@ namespace WebFeedReader.ViewModels
 
             param.IsFavorite = !param.IsFavorite;
             await repository.MarkAsFavoriteAsync(param.Key, param.IsFavorite);
+        });
+
+        public AsyncRelayCommand LoadAsyncCommand => new (async () =>
+        {
+            if (currentSource == null)
+            {
+                return;
+            }
+
+            currentOffset = 0;
+            Items.Clear();
+            await LoadNextPageAsync(currentSource);
         });
 
         public async Task OnSourceSelectedAsync(FeedSource source)
@@ -148,6 +128,8 @@ namespace WebFeedReader.ViewModels
 
         public async Task LoadNextPageAsync(FeedSource source)
         {
+            currentSource = source;
+
             if (isLoading || !hasMoreItems)
             {
                 return;
@@ -156,7 +138,7 @@ namespace WebFeedReader.ViewModels
             isLoading = true;
 
             var list =
-                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize);
+                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize, IsUnreadOnly);
 
             if (list.Count == 0)
             {
