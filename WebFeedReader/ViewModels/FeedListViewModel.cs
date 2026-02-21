@@ -27,7 +27,6 @@ namespace WebFeedReader.ViewModels
         private int currentOffset;
         private bool isLoading;
         private bool hasMoreItems = true;
-        private bool isUnreadOnly;
         private FeedSource currentSource;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
@@ -53,11 +52,7 @@ namespace WebFeedReader.ViewModels
             }
         }
 
-        public bool IsUnreadOnly
-        {
-            get => isUnreadOnly;
-            set => SetProperty(ref isUnreadOnly, value);
-        }
+        public FeedSearchOption FeedSearchOption { get; private set; } = new ();
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
 
@@ -138,7 +133,7 @@ namespace WebFeedReader.ViewModels
             isLoading = true;
 
             var list =
-                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize, IsUnreadOnly);
+                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize, FeedSearchOption);
 
             if (list.Count == 0)
             {

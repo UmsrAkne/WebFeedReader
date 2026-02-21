@@ -12,7 +12,7 @@ namespace WebFeedReader.Dbs
 
         Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId);
 
-        Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, bool unreadOnly = false);
+        Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, FeedSearchOption feedSearchOption);
 
         Task MarkAsReadAsync(IEnumerable<string> keys);
 
