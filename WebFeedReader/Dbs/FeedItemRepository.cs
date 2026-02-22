@@ -104,14 +104,18 @@ namespace WebFeedReader.Dbs
         {
             await using var db = dbFactory();
 
+            // SQLite は DateTimeOffset のソートを DB 側で処理できないため、
+            // 一旦 List に展開してからメモリ上でソートを行う必要がある。
+            // (See: SQLite Error: 'DateTimeOffset' in ORDER BY clauses)
             var items = await db.FeedItems
                 .AsNoTracking()
                 .Where(x => x.SourceId == sourceId)
                 .Where(x => option.IsUnreadOnly ? !x.IsRead : true)
                 .ToListAsync();
 
-            return items
-                .OrderByDescending(x => x.Published)
+            return (option.IsReverseOrder
+                ? items.OrderBy(x => x.Published)
+                : items.OrderByDescending(x => x.Published))
                 .ThenByDescending(x => x.Id)
                 .Skip(offset)
                 .Take(limit)
