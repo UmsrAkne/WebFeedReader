@@ -170,8 +170,7 @@ namespace WebFeedReader.ViewModels
                     Offset = currentOffset,
                 });
 
-            await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
-            readItems.Clear();
+            await FlushReadItemsAsync();
 
             isLoading = false;
 
@@ -179,6 +178,34 @@ namespace WebFeedReader.ViewModels
             foreach (var feedItem in Items)
             {
                 feedItem.LineNumber = ++lineNumber;
+            }
+        }
+
+        public async Task FlushReadItemsAsync()
+        {
+            try
+            {
+                if (repository == null)
+                {
+                    // Design-time or default constructor: nothing to flush
+                    readItems.Clear();
+                    return;
+                }
+
+                if (readItems.Count == 0)
+                {
+                    return;
+                }
+
+                await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to flush read items to database");
+            }
+            finally
+            {
+                readItems.Clear();
             }
         }
     }
