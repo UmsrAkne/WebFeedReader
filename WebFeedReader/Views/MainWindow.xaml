@@ -69,7 +69,7 @@
                             Padding="4"
                             Command="{Binding FeedListViewModel.LoadAsyncCommand}"
                             Content="Filter (unread)"
-                            IsChecked="{Binding FeedListViewModel.IsUnreadOnly}" />
+                            IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsUnreadOnly}" />
                     </StackPanel>
                 </StatusBar>
 

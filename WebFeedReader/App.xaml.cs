@@ -17,9 +17,18 @@ namespace WebFeedReader;
 /// </summary>
 public partial class App
 {
+    private MainWindowViewModel mainWindowVm;
+
     protected override Window CreateShell()
     {
         return Container.Resolve<MainWindow>();
+    }
+
+    protected override void InitializeShell(Window shell)
+    {
+        // 起動時に DataContext (ViewModel) を変数に入れておく
+        mainWindowVm = shell.DataContext as MainWindowViewModel;
+        base.InitializeShell(shell);
     }
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
@@ -81,6 +90,23 @@ public partial class App
         {
             // Initialize a view model asynchronously on the UI dispatcher after shell is ready
             Dispatcher.BeginInvoke(async () => await vm.InitializeAsync(), DispatcherPriority.Background);
+        }
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        try
+        {
+            // Flush pending read items synchronously to ensure they are saved before the app closes
+            mainWindowVm.FeedListViewModel.FlushReadItemsAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error while flushing read items on application exit");
+        }
+        finally
+        {
+            base.OnExit(e);
         }
     }
 }
