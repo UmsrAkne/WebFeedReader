@@ -104,21 +104,42 @@ namespace WebFeedReader.Dbs
         {
             await using var db = dbFactory();
 
+            var baseQuery = db.FeedItems
+                .AsNoTracking()
+                .Where(x => x.SourceId == sourceId);
+
+            if (option.IsUnreadOnly)
+            {
+                baseQuery = baseQuery.Where(x => !x.IsRead);
+            }
+
             // SQLite は DateTimeOffset のソートを DB 側で処理できないため、
             // 一旦 List に展開してからメモリ上でソートを行う必要がある。
             // (See: SQLite Error: 'DateTimeOffset' in ORDER BY clauses)
-            var items = await db.FeedItems
-                .AsNoTracking()
-                .Where(x => x.SourceId == sourceId)
-                .Where(x => option.IsUnreadOnly ? !x.IsRead : true)
+            // また、ソートに必要な情報のみをメモリ上に載せることでパフォーマンスを上げる。
+            var lightweight = await baseQuery
+                .Select(x => new { x.Id, x.Published, })
                 .ToListAsync();
 
-            return (option.IsReverseOrder
-                ? items.OrderBy(x => x.Published)
-                : items.OrderByDescending(x => x.Published))
-                .ThenByDescending(x => x.Id)
+            var orderedIds = (option.IsReverseOrder
+                    ? lightweight.OrderBy(x => x.Published)
+                    : lightweight.OrderByDescending(x => x.Published))
                 .Skip(offset)
                 .Take(limit)
+                .Select(x => x.Id)
+                .ToList();
+
+            // 抽出した id を FeedItem に戻す。
+            var items = await db.FeedItems
+                .AsNoTracking()
+                .Where(x => orderedIds.Contains(x.Id))
+                .ToListAsync();
+
+            var itemDict = items.ToDictionary(x => x.Id);
+
+            // items の順序は保証されないため、 orderedIds の順序を復元する。
+            return orderedIds
+                .Select(id => itemDict[id])
                 .ToList();
         }
 
