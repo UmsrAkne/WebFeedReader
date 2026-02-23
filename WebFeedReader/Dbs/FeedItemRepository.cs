@@ -102,20 +102,34 @@ namespace WebFeedReader.Dbs
 
         public async Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, FeedSearchOption option)
         {
+            // NOTE:
+            // SQLite + EF Core の組み合わせでは、DateTimeOffset 列に対する
+            // ORDER BY が正しく変換されず、DB 側でのソートが行えない制約がある。
+            //
+            // そのため LINQ で実装した場合、いったん全件をメモリに展開してから
+            // ソート・ページングを行う必要があり、データ件数増加時に
+            // パフォーマンスおよびメモリ使用量の面で問題となる。
+            //
+            // 上記制約を回避し、DB 側での ORDER BY + LIMIT/OFFSET を実現するため、
+            // 本箇所では意図的に raw SQL (FromSqlRaw) を使用している。
+            //
+            // 将来的に Published の型やマッピングを見直し、
+            // LINQ で安全に ORDER BY が可能になった場合は再検討すること。
             await using var db = dbFactory();
 
-            var items = await db.FeedItems
-                .AsNoTracking()
-                .Where(x => x.SourceId == sourceId)
-                .Where(x => option.IsUnreadOnly ? !x.IsRead : true)
-                .ToListAsync();
+            var whereUnread = option.IsUnreadOnly ? " AND IsRead = 0" : string.Empty;
+            var orderDir = option.IsReverseOrder ? "ASC" : "DESC";
 
-            return items
-                .OrderByDescending(x => x.Published)
-                .ThenByDescending(x => x.Id)
-                .Skip(offset)
-                .Take(limit)
-                .ToList();
+            var sql =
+                "SELECT * FROM FeedItems " +
+                "WHERE SourceId = {0}" + whereUnread +
+                $" ORDER BY Published {orderDir} " +
+                "LIMIT {1} OFFSET {2}";
+
+            return await db.FeedItems
+                .FromSqlRaw(sql, sourceId, limit, offset)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task MarkAsReadAsync(IEnumerable<string> keys)
