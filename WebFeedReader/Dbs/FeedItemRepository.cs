@@ -102,45 +102,34 @@ namespace WebFeedReader.Dbs
 
         public async Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, FeedSearchOption option)
         {
+            // NOTE:
+            // SQLite + EF Core の組み合わせでは、DateTimeOffset 列に対する
+            // ORDER BY が正しく変換されず、DB 側でのソートが行えない制約がある。
+            //
+            // そのため LINQ で実装した場合、いったん全件をメモリに展開してから
+            // ソート・ページングを行う必要があり、データ件数増加時に
+            // パフォーマンスおよびメモリ使用量の面で問題となる。
+            //
+            // 上記制約を回避し、DB 側での ORDER BY + LIMIT/OFFSET を実現するため、
+            // 本箇所では意図的に raw SQL (FromSqlRaw) を使用している。
+            //
+            // 将来的に Published の型やマッピングを見直し、
+            // LINQ で安全に ORDER BY が可能になった場合は再検討すること。
             await using var db = dbFactory();
 
-            var baseQuery = db.FeedItems
+            var whereUnread = option.IsUnreadOnly ? " AND IsRead = 0" : string.Empty;
+            var orderDir = option.IsReverseOrder ? "ASC" : "DESC";
+
+            var sql =
+                "SELECT * FROM FeedItems " +
+                "WHERE SourceId = {0}" + whereUnread +
+                $" ORDER BY Published {orderDir} " +
+                "LIMIT {1} OFFSET {2}";
+
+            return await db.FeedItems
+                .FromSqlRaw(sql, sourceId, limit, offset)
                 .AsNoTracking()
-                .Where(x => x.SourceId == sourceId);
-
-            if (option.IsUnreadOnly)
-            {
-                baseQuery = baseQuery.Where(x => !x.IsRead);
-            }
-
-            // SQLite は DateTimeOffset のソートを DB 側で処理できないため、
-            // 一旦 List に展開してからメモリ上でソートを行う必要がある。
-            // (See: SQLite Error: 'DateTimeOffset' in ORDER BY clauses)
-            // また、ソートに必要な情報のみをメモリ上に載せることでパフォーマンスを上げる。
-            var lightweight = await baseQuery
-                .Select(x => new { x.Id, x.Published, })
                 .ToListAsync();
-
-            var orderedIds = (option.IsReverseOrder
-                    ? lightweight.OrderBy(x => x.Published)
-                    : lightweight.OrderByDescending(x => x.Published))
-                .Skip(offset)
-                .Take(limit)
-                .Select(x => x.Id)
-                .ToList();
-
-            // 抽出した id を FeedItem に戻す。
-            var items = await db.FeedItems
-                .AsNoTracking()
-                .Where(x => orderedIds.Contains(x.Id))
-                .ToListAsync();
-
-            var itemDict = items.ToDictionary(x => x.Id);
-
-            // items の順序は保証されないため、 orderedIds の順序を復元する。
-            return orderedIds
-                .Select(id => itemDict[id])
-                .ToList();
         }
 
         public async Task MarkAsReadAsync(IEnumerable<string> keys)
