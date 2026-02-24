@@ -31,6 +31,12 @@ namespace WebFeedReader.Dbs
             }).ToList();
         }
 
+        public async Task<IEnumerable<NgWord>> GetAllNgWordsAsync()
+        {
+            await using var db = dbFactory();
+            return await db.NgWords.ToListAsync();
+        }
+
         private static bool ContainsNgWord(FeedItem feed, IReadOnlyList<string> ngWords)
         {
             return ngWords.Any(word => feed.Title.Contains(word) || feed.Summary.Contains(word));
