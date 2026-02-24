@@ -27,12 +27,22 @@
         </ListBox>
 
         <StackPanel Grid.Row="1">
-            <Button
-                Width="250"
-                Padding="2"
-                HorizontalAlignment="Right"
-                Command="{Binding LoadNgWordsCommand}"
-                Content="Show ng words" />
+            <DockPanel HorizontalAlignment="Right">
+
+                <CheckBox
+                    Margin="20,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding LoadNgWordsCommand}"
+                    Content="Mask words"
+                    IsChecked="{Binding IsMaskEnabled}" />
+
+                <Button
+                    Width="250"
+                    Padding="2"
+                    HorizontalAlignment="Right"
+                    Command="{Binding LoadNgWordsCommand}"
+                    Content="Show ng words" />
+            </DockPanel>
 
             <Border
                 Height="1"

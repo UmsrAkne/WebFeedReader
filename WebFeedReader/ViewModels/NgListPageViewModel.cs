@@ -12,6 +12,7 @@ namespace WebFeedReader.ViewModels
         private readonly NgWordService ngWordService;
         private string pendingNgWord = string.Empty;
         private int ngWordCount;
+        private bool isMaskEnabled;
 
         public NgListPageViewModel(NgWordService ngWordService)
         {
@@ -24,15 +25,20 @@ namespace WebFeedReader.ViewModels
 
         public int NgWordCount { get => ngWordCount; set => SetProperty(ref ngWordCount, value); }
 
+        public bool IsMaskEnabled { get => isMaskEnabled; set => SetProperty(ref isMaskEnabled, value); }
+
         public AsyncRelayCommand LoadNgWordsCommand => new (async () =>
         {
             NgWords.Clear();
             var list = await ngWordService.GetAllNgWordsAsync();
             var l = list.ToList();
 
-            foreach (var ngWord in l)
+            if (!IsMaskEnabled)
             {
-                ngWord.Value = MaskExceptFirst(ngWord.Value);
+                foreach (var ngWord in l)
+                {
+                    ngWord.Value = MaskExceptFirst(ngWord.Value);
+                }
             }
 
             NgWords.AddRange(l);
