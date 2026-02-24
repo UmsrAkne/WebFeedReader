@@ -45,13 +45,16 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
-            await ngWordService.AddNgWordAsync(
+            var added = await ngWordService.AddNgWordAsync(
                 new NgWord { Value = PendingNgWord, });
 
             PendingNgWord = string.Empty;
 
-            var l = await ngWordService.GetAllNgWordsAsync();
-            NgWordCount = l.Count();
+            if (added)
+            {
+                var l = await ngWordService.GetAllNgWordsAsync();
+                NgWordCount = l.Count();
+            }
         });
 
         private string MaskExceptFirst(string value)
