@@ -27,7 +27,7 @@
         </ListBox>
 
         <StackPanel Grid.Row="1">
-            <DockPanel HorizontalAlignment="Right">
+            <DockPanel Margin="0,10" HorizontalAlignment="Right">
 
                 <CheckBox
                     Margin="20,0"
