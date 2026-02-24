@@ -1,4 +1,6 @@
-﻿namespace WebFeedReader.Utils
+﻿using System.Threading.Tasks;
+
+namespace WebFeedReader.Utils
 {
     using System;
     using System.IO;
@@ -50,6 +52,17 @@
 
             var json = JsonSerializer.Serialize(this, options);
             File.WriteAllText(ConfigPath, json);
+        }
+
+        public async Task SaveAsync()
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+
+            var json = JsonSerializer.Serialize(this, options);
+            await File.WriteAllTextAsync(ConfigPath, json);
         }
     }
 }

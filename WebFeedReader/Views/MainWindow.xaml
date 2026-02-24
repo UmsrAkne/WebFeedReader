@@ -422,6 +422,14 @@
                 </StatusBar>
             </Grid>
         </TabItem>
+
+        <TabItem Padding="15,4">
+            <TabItem.Header>
+                <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Ng word" />
+            </TabItem.Header>
+            <views:NgListPage DataContext="{Binding NgListPageViewModel}" />
+        </TabItem>
+
         <TabItem Padding="15,4">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Setting" />
