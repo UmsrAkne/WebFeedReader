@@ -10,6 +10,8 @@ namespace WebFeedReader.ViewModels
     public class NgListPageViewModel : BindableBase
     {
         private readonly NgWordService ngWordService;
+        private string pendingNgWord = string.Empty;
+        private int ngWordCount;
 
         public NgListPageViewModel(NgWordService ngWordService)
         {
@@ -17,6 +19,10 @@ namespace WebFeedReader.ViewModels
         }
 
         public ObservableCollection<NgWord> NgWords { get; set; } = new ();
+
+        public string PendingNgWord { get => pendingNgWord; set => SetProperty(ref pendingNgWord, value); }
+
+        public int NgWordCount { get => ngWordCount; set => SetProperty(ref ngWordCount, value); }
 
         public AsyncRelayCommand LoadNgWordsCommand => new (async () =>
         {
@@ -30,6 +36,22 @@ namespace WebFeedReader.ViewModels
             }
 
             NgWords.AddRange(l);
+        });
+
+        public AsyncRelayCommand AddNgWordCommand => new (async () =>
+        {
+            if (string.IsNullOrWhiteSpace(PendingNgWord))
+            {
+                return;
+            }
+
+            await ngWordService.AddNgWordAsync(
+                new NgWord { Value = PendingNgWord, });
+
+            PendingNgWord = string.Empty;
+
+            var l = await ngWordService.GetAllNgWordsAsync();
+            NgWordCount = l.Count();
         });
 
         private string MaskExceptFirst(string value)
