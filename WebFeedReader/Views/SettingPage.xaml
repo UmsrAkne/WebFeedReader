@@ -60,12 +60,21 @@
             <!-- View-only fields -->
             <DockPanel>
                 <TextBlock VerticalAlignment="Center" Text="LastFeedsUpdate" />
-                <TextBlock VerticalAlignment="Center" Text="{Binding LastFeedsUpdate}" />
+                <TextBlock
+                    Width="Auto"
+                    Margin="2"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding LastFeedsUpdate}" />
             </DockPanel>
 
             <DockPanel>
                 <TextBlock VerticalAlignment="Center" Text="NgWordListVersion" />
-                <TextBlock VerticalAlignment="Center" Text="{Binding NgWordListVersion}" />
+                <TextBlock
+                    Margin="2"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding NgWordListVersion}" />
             </DockPanel>
 
             <!-- Footer -->
