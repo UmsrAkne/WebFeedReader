@@ -16,7 +16,7 @@ namespace WebFeedReader.ViewModels
     // ReSharper disable once ClassNeverInstantiated.Global
     public class FeedListViewModel : BindableBase
     {
-        private const int PageSize = 100;
+        private const int PageSize = 200;
 
         private readonly IFeedItemRepository repository;
         private readonly NgWordService ngWordService;
