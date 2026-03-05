@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:WebFeedReader.Models"
     xmlns:prism="http://prismlibrary.com/"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
     xmlns:views="clr-namespace:WebFeedReader.Views"
     Title="{Binding Title}"
@@ -17,24 +16,32 @@
     Height="400"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
-    Background="White"
+    Background="{StaticResource WindowBackgroundBrush}"
     mc:Ignorable="d">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="LightBorderBrush" Color="LightSlateGray" />
-        <system:Double x:Key="CommonFontSize">15</system:Double>
         <converters:UtcToJstConverter x:Key="UtcToJstConverter" />
     </Window.Resources>
 
-    <TabControl>
+    <TabControl Background="{StaticResource ControlBackgroundBrush}">
         <TabItem Padding="15,4">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Main" />
             </TabItem.Header>
             <Grid>
+
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
                         <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                    </Style>
+
+                    <Style TargetType="StatusBar">
+                        <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
+                    </Style>
+
+                    <Style TargetType="TabItem">
+                        <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
                     </Style>
                 </Grid.Resources>
 
@@ -54,8 +61,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
-                    Padding="3"
-                    Background="White">
+                    Padding="3">
                     <StackPanel Orientation="Horizontal">
                         <Button
                             Width="150"
@@ -83,6 +89,7 @@
                     CornerRadius="5">
 
                     <ListBox
+                        Background="{StaticResource ControlBackgroundBrush}"
                         BorderThickness="0"
                         ItemsSource="{Binding FeedSourceListViewModel.Items}"
                         SelectedItem="{Binding FeedSourceListViewModel.SelectedItem}">
@@ -91,6 +98,7 @@
                             <DataTemplate DataType="{x:Type models:FeedSource}">
                                 <DataTemplate.Resources>
                                     <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
                                         <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
                                     </Style>
                                 </DataTemplate.Resources>
@@ -139,6 +147,7 @@
                         CornerRadius="5">
                         <ListBox
                             HorizontalContentAlignment="Stretch"
+                            Background="{StaticResource ControlBackgroundBrush}"
                             BorderThickness="0"
                             ItemsSource="{Binding FeedListViewModel.Items}"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -172,6 +181,7 @@
                                     <DataTemplate.Resources>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                                            <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
                                             <Setter Property="VerticalAlignment" Value="Center" />
                                         </Style>
                                     </DataTemplate.Resources>
@@ -204,7 +214,7 @@
                                                 Grid.Column="1"
                                                 Width="5"
                                                 Margin="0,0,8,0"
-                                                Background="Orange"
+                                                Background="{StaticResource IndicatorColor}"
                                                 CornerRadius="3">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
@@ -245,7 +255,7 @@
                                                             </DataTrigger>
 
                                                             <DataTrigger Binding="{Binding IsFavorite}" Value="False">
-                                                                <Setter Property="Foreground" Value="LightGray" />
+                                                                <Setter Property="Foreground" Value="DimGray" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -274,7 +284,7 @@
                                     <Setter Property="Padding" Value="6,4" />
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
-                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
                                     <Setter Property="BorderThickness" Value="2" />
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
 
@@ -306,12 +316,12 @@
                                                                     <ColorAnimation
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                                        To="WhiteSmoke"
+                                                                        To="{StaticResource MouseOverBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                     <ColorAnimation
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                                        To="WhiteSmoke"
+                                                                        To="{StaticResource MouseOverBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                 </Storyboard>
                                                             </BeginStoryboard>
@@ -323,12 +333,12 @@
                                                                     <ColorAnimation
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                                        To="White"
+                                                                        To="{StaticResource LightBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                     <ColorAnimation
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                                        To="White"
+                                                                        To="{StaticResource LightBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                 </Storyboard>
                                                             </BeginStoryboard>
@@ -361,13 +371,13 @@
                                                                         FillBehavior="Stop"
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                                        To="White"
+                                                                        To="{StaticResource LightBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                     <ColorAnimation
                                                                         FillBehavior="Stop"
                                                                         Storyboard.TargetName="Bd"
                                                                         Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                                        To="White"
+                                                                        To="{StaticResource LightBackgroundColor}"
                                                                         Duration="0:0:0.1" />
                                                                 </Storyboard>
                                                             </BeginStoryboard>
@@ -414,8 +424,7 @@
                     Grid.Row="2"
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
-                    Padding="5"
-                    Background="White">
+                    Padding="5">
                     <StatusBarItem>
                         <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
                     </StatusBarItem>
