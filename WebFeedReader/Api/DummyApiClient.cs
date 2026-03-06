@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace WebFeedReader.Api
 {
@@ -56,9 +57,10 @@ namespace WebFeedReader.Api
             return Task.FromResult(json);
         }
 
-        public Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default)
+        public async Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            Log.Information("Create Source Async (DummyApiClient). {@requestINfo}", new { request.Name, request.Url, });
+            await Task.Delay(2000, ct);
         }
 
         public void Dispose()

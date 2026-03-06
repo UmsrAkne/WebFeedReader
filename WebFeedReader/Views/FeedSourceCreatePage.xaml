@@ -61,7 +61,8 @@
             Width="200"
             HorizontalAlignment="Right"
             Command="{Binding CreateFeedSourceRequestCommand}"
-            Content="Add web site" />
+            Content="Add web site"
+            IsEnabled="{Binding CanCreateSource}" />
 
     </Grid>
 </UserControl>

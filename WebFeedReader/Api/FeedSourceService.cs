@@ -32,6 +32,13 @@ namespace WebFeedReader.Api
 
         public async Task AddSourceAsync(string name, string url, int interval)
         {
+            // 登録前に形式チェック
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var validatedUri) ||
+                (validatedUri.Scheme != Uri.UriSchemeHttp && validatedUri.Scheme != Uri.UriSchemeHttps))
+            {
+                throw new ArgumentException("無効なURL形式です。http または https で始まるURLを入力してください。");
+            }
+
             var request = new SourceCreateRequest
             {
                 Name = name,
