@@ -47,7 +47,7 @@ public partial class App
         containerRegistry.RegisterSingleton<NgWordService>();
 
         containerRegistry.RegisterSingleton<IFeedSourceRepository, FeedSourceRepository>();
-        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceSyncService>();
+        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceService>();
 
         containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
@@ -55,6 +55,7 @@ public partial class App
         containerRegistry.Register<FeedListViewModel>();
         containerRegistry.Register<SettingPageViewModel>();
         containerRegistry.Register<NgListPageViewModel>();
+        containerRegistry.Register<FeedSourceCreatePageViewModel>();
 
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();

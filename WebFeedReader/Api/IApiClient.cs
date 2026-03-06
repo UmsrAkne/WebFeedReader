@@ -9,5 +9,7 @@ namespace WebFeedReader.Api
         Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default);
 
         Task<string> GetSourcesAsync(DateTimeOffset since, CancellationToken ct = default);
+
+        Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default);
     }
 }

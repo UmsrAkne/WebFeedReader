@@ -9,16 +9,39 @@
     d:DataContext="{d:DesignInstance viewModels:NgListPageViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="300"
+    Background="{StaticResource WindowBackgroundBrush}"
     mc:Ignorable="d">
     <Grid Margin="4">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+            </Style>
+
+            <Style TargetType="TextBox">
+                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
+                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ListBox Grid.Row="0" ItemsSource="{Binding NgWords}">
+        <ListBox
+            Grid.Row="0"
+            Background="{StaticResource ControlBackgroundBrush}"
+            ItemsSource="{Binding NgWords}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:NgWord}">
+                    <DataTemplate.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                            <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+                        </Style>
+                    </DataTemplate.Resources>
+
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Value}" />
                     </StackPanel>
@@ -33,8 +56,11 @@
                     Margin="20,0"
                     VerticalAlignment="Center"
                     Command="{Binding LoadNgWordsCommand}"
-                    Content="Mask words"
-                    IsChecked="{Binding IsMaskEnabled}" />
+                    IsChecked="{Binding IsMaskEnabled}">
+                    <CheckBox.Content>
+                        <TextBlock Text="Mask Words" />
+                    </CheckBox.Content>
+                </CheckBox>
 
                 <Button
                     Width="250"
