@@ -55,6 +55,7 @@ public partial class App
         containerRegistry.Register<FeedListViewModel>();
         containerRegistry.Register<SettingPageViewModel>();
         containerRegistry.Register<NgListPageViewModel>();
+        containerRegistry.Register<FeedSourceCreatePageViewModel>();
 
         #if DEBUG
         containerRegistry.Register<IApiClient, DummyApiClient>();

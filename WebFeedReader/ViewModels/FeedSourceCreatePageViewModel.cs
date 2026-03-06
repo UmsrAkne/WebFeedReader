@@ -32,6 +32,6 @@ namespace WebFeedReader.ViewModels
         public AsyncRelayCommand CreateFeedSourceRequestCommand => new (async () =>
         {
             await feedSourceService.AddSourceAsync(PageTitle, Url, CheckInterval);
-        }, () => !string.IsNullOrWhiteSpace(pageTitle) && string.IsNullOrWhiteSpace(url) && CheckInterval < 60);
+        }, () => !string.IsNullOrWhiteSpace(PageTitle) && !string.IsNullOrWhiteSpace(Url) && CheckInterval >= 60);
     }
 }

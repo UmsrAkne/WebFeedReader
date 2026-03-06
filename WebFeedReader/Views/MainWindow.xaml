@@ -434,6 +434,14 @@
 
         <TabItem Padding="15,4">
             <TabItem.Header>
+                <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Add Web site" />
+            </TabItem.Header>
+            <views:FeedSourceCreatePage DataContext="{Binding FeedSourceCreatePageViewModel}" />
+        </TabItem>
+
+
+        <TabItem Padding="15,4">
+            <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Ng word" />
             </TabItem.Header>
             <views:NgListPage DataContext="{Binding NgListPageViewModel}" />

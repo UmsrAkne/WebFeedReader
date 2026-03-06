@@ -43,6 +43,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IFeedSyncService feedSyncService,
         FeedListViewModel feedListViewModel,
         NgListPageViewModel ngListPageViewModel,
+        FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
         SettingPageViewModel settingPageViewModel)
     {
         this.appSettings = appSettings;
@@ -51,6 +52,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         this.feedSyncService = feedSyncService;
         FeedListViewModel = feedListViewModel;
         NgListPageViewModel = ngListPageViewModel;
+        FeedSourceCreatePageViewModel = feedSourceCreatePageViewModel;
         SettingPageViewModel = settingPageViewModel;
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
@@ -71,6 +73,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     public FeedListViewModel FeedListViewModel { get; private set; }
 
     public NgListPageViewModel NgListPageViewModel { get; }
+
+    public FeedSourceCreatePageViewModel FeedSourceCreatePageViewModel { get; }
 
     public SettingPageViewModel SettingPageViewModel { get; }
 
