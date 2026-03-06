@@ -47,7 +47,7 @@ public partial class App
         containerRegistry.RegisterSingleton<NgWordService>();
 
         containerRegistry.RegisterSingleton<IFeedSourceRepository, FeedSourceRepository>();
-        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceSyncService>();
+        containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceService>();
 
         containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();

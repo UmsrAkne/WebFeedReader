@@ -56,6 +56,11 @@ namespace WebFeedReader.Api
             return Task.FromResult(json);
         }
 
+        public Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             // 何もしない（外部リソース未使用）

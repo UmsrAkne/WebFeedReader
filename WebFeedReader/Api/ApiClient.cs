@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using WebFeedReader.Utils;
@@ -43,6 +45,41 @@ namespace WebFeedReader.Api
             var url = $"{BaseUrl}/sources?since={Uri.EscapeDataString(sinceText)}";
 
             return await GetAsync(url, ct);
+        }
+
+        public async Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default)
+        {
+            EnsureSshTunnel();
+
+            var url = $"{BaseUrl}/sources";
+
+            // System.Text.Json 等でシリアライズ
+            var json = JsonSerializer.Serialize(request);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await PostAsync(url, content, ct);
+        }
+
+        private async Task PostAsync(string url, HttpContent content, CancellationToken ct)
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                try
+                {
+                    using var response = await httpClient.PostAsync(url, content, ct);
+
+                    // 409 Conflict (IntegrityError) のハンドリングが必要な場合はここで行う
+                    response.EnsureSuccessStatusCode();
+                    return;
+                }
+                catch (HttpRequestException) when (i < 2)
+                {
+                    await Task.Delay(1000, ct);
+                    EnsureSshTunnel();
+                }
+            }
+
+            throw new Exception("サーバーへのソース追加に失敗しました。");
         }
 
         public void Dispose()
