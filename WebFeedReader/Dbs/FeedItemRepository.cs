@@ -118,11 +118,22 @@ namespace WebFeedReader.Dbs
             await using var db = dbFactory();
 
             var whereUnread = option.IsUnreadOnly ? " AND IsRead = 0" : string.Empty;
+            var whereDate = string.Empty;
+
+            // 3. 直近1ヶ月（固定値）のフィルタ
+            // 逆順（古い順）の時だけ「古すぎるもの」を除外する
+            if (option.IsReverseOrder)
+            {
+                // SQLiteのdate関数を利用して1ヶ月前の基準値を作成
+                // フォーマットが 2026-01-28... なので 'now', '-1 month' で比較可能
+                whereDate += " AND Published >= datetime('now', '-1 month', 'localtime')";
+            }
+
             var orderDir = option.IsReverseOrder ? "ASC" : "DESC";
 
             var sql =
                 "SELECT * FROM FeedItems " +
-                "WHERE SourceId = {0}" + whereUnread +
+                "WHERE SourceId = {0}" + whereUnread + whereDate +
                 $" ORDER BY Published {orderDir} " +
                 "LIMIT {1} OFFSET {2}";
 
