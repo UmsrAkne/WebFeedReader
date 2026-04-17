@@ -76,6 +76,24 @@
                             Command="{Binding FeedListViewModel.LoadAsyncCommand}"
                             Content="Filter (unread)"
                             IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsUnreadOnly}" />
+
+                        <ToggleButton
+                            Width="200"
+                            Padding="4"
+                            Command="{Binding FeedListViewModel.LoadAsyncCommand}"
+                            IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsReverseOrder}">
+                            <ToggleButton.Style>
+                                <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="ToggleButton">
+                                    <Setter Property="Content" Value="Newest first" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Content" Value="Oldest first (Filtered to 1 month)" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+
                     </StackPanel>
                 </StatusBar>
 
