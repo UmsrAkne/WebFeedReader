@@ -10,6 +10,7 @@ using Prism.Mvvm;
 using Serilog;
 using WebFeedReader.Dbs;
 using WebFeedReader.Models;
+using WebFeedReader.Utils;
 
 namespace WebFeedReader.ViewModels
 {
@@ -33,6 +34,10 @@ namespace WebFeedReader.ViewModels
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
+            FeedSearchOption = new FeedSearchOption
+            {
+                NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
+            };
         }
 
         public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
@@ -52,7 +57,7 @@ namespace WebFeedReader.ViewModels
             }
         }
 
-        public FeedSearchOption FeedSearchOption { get; private set; } = new ();
+        public FeedSearchOption FeedSearchOption { get; private set; }
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
 
@@ -125,7 +130,7 @@ namespace WebFeedReader.ViewModels
         {
             currentSource = source;
 
-            if (isLoading || !hasMoreItems)
+            if (isLoading)
             {
                 return;
             }

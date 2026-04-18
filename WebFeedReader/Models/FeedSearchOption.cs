@@ -10,6 +10,7 @@ namespace WebFeedReader.Models
         private DateTime publishedFrom;
         private DateTime publishedTo;
         private string keyword = string.Empty;
+        private int ngWordCheckVersion;
 
         public bool IsReverseOrder { get => isReverseOrder; set => SetProperty(ref isReverseOrder, value); }
 
@@ -20,5 +21,11 @@ namespace WebFeedReader.Models
         public DateTime PublishedTo { get => publishedTo; set => SetProperty(ref publishedTo, value); }
 
         public string Keyword { get => keyword; set => SetProperty(ref keyword, value); }
+
+        public int NgWordCheckVersion
+        {
+            get => ngWordCheckVersion;
+            set => SetProperty(ref ngWordCheckVersion, value);
+        }
     }
 }
