@@ -12,7 +12,7 @@ namespace WebFeedReader.Api
     {
         public Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {
-            var items = Enumerable.Range(1, 100)
+            var items = Enumerable.Range(1, 3000)
                 .Select(i => new
                 {
                     id = i,

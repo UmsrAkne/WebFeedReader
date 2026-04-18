@@ -129,16 +129,21 @@ namespace WebFeedReader.Dbs
                 whereDate += " AND Published >= datetime('now', '-1 month', 'localtime')";
             }
 
+            // NGワードチェックの判定ロジックを追加
+            // 条件： (ItemのVer < OptionのVer) OR (IsNg が false)
+            // 逆説的に「除外したい条件（Ver >= OptionVer かつ IsNg = true）」以外を残す
+            var whereNgWord = " AND NOT (NgWordCheckVersion >= {3} AND IsNg = 1)";
+
             var orderDir = option.IsReverseOrder ? "ASC" : "DESC";
 
             var sql =
                 "SELECT * FROM FeedItems " +
-                "WHERE SourceId = {0}" + whereUnread + whereDate +
+                "WHERE SourceId = {0}" + whereUnread + whereDate + whereNgWord +
                 $" ORDER BY Published {orderDir} " +
                 "LIMIT {1} OFFSET {2}";
 
             return await db.FeedItems
-                .FromSqlRaw(sql, sourceId, limit, offset)
+                .FromSqlRaw(sql, sourceId, limit, offset, option.NgWordCheckVersion)
                 .AsNoTracking()
                 .ToListAsync();
         }
