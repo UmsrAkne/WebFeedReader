@@ -112,6 +112,8 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
+            // ロードの状態をリセットする
+            hasMoreItems = true;
             currentOffset = 0;
             Items.Clear();
             await LoadNextPageAsync(currentSource);
@@ -130,7 +132,8 @@ namespace WebFeedReader.ViewModels
         {
             currentSource = source;
 
-            if (isLoading)
+            // !hasMoreItems を外すと、スクロール終端で無限ロードが起こるので絶対必須。
+            if (isLoading || !hasMoreItems)
             {
                 return;
             }
