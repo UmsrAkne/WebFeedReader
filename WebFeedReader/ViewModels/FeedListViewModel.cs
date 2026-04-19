@@ -160,8 +160,16 @@ namespace WebFeedReader.ViewModels
             }
 
             var visibleItems = list.Where(f => !f.IsNg);
+            var enumerable = visibleItems.ToList();
+            var maxLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
 
-            foreach (var item in visibleItems)
+            // Items.Add してからだと余計な変更通知が飛ぶので、入れる前に行番号を変更する
+            for (var i = 0; i < enumerable.Count; i++)
+            {
+                enumerable[i].LineNumber = maxLineNumber + i;
+            }
+
+            foreach (var item in enumerable)
             {
                 Items.Add(item);
             }
@@ -181,12 +189,6 @@ namespace WebFeedReader.ViewModels
             await FlushReadItemsAsync();
 
             isLoading = false;
-
-            var lineNumber = 0;
-            foreach (var feedItem in Items)
-            {
-                feedItem.LineNumber = ++lineNumber;
-            }
         }
 
         public async Task FlushReadItemsAsync()
