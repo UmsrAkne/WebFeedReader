@@ -112,6 +112,8 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
+            // ロードの状態をリセットする
+            hasMoreItems = true;
             currentOffset = 0;
             Items.Clear();
             await LoadNextPageAsync(currentSource);
@@ -130,42 +132,64 @@ namespace WebFeedReader.ViewModels
         {
             currentSource = source;
 
-            if (isLoading)
+            // !hasMoreItems を外すと、スクロール終端で無限ロードが起こるので絶対必須。
+            if (isLoading || !hasMoreItems)
             {
                 return;
             }
 
             isLoading = true;
 
-            var list =
-                await repository.GetBySourceIdPagedAsync(source.Id, currentOffset, PageSize, FeedSearchOption);
+            // UI スレッドで必要な情報だけをスナップショット
+            var offset = currentOffset;
+            var pageSize = PageSize;
+            var searchOption = FeedSearchOption;
+            var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
 
-            if (list.Count == 0)
+            // 重い処理（DB 取得、NG チェック、前処理）はバックグラウンドで実行
+            var result = await Task.Run(async () =>
+            {
+                var list = await repository.GetBySourceIdPagedAsync(source.Id, offset, pageSize, searchOption);
+                if (list.Count == 0)
+                {
+                    return (Visible: new List<FeedItem>(), TotalCount: 0, NgFiltered: 0);
+                }
+
+                // NG チェックと反映
+                var checkResults = await ngWordService.Check(list);
+                await repository.ApplyNgCheckResultsAsync(checkResults);
+                foreach (var r in checkResults)
+                {
+                    list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
+                }
+
+                // 非表示対象を除外し、行番号を事前に設定
+                var visible = list.Where(f => !f.IsNg).ToList();
+                for (var i = 0; i < visible.Count; i++)
+                {
+                    visible[i].LineNumber = baseLineNumber + i;
+                }
+
+                var ngCount = list.Count(f => f.IsNg);
+                return (Visible: visible, TotalCount: list.Count, NgFiltered: ngCount);
+            });
+
+            // UI スレッドに戻って Items に追加と各種カウンタ更新
+            if (result.TotalCount == 0)
             {
                 hasMoreItems = false;
                 isLoading = false;
                 return;
             }
 
-            // NG チェック
-            var checkResults = await ngWordService.Check(list);
-            await repository.ApplyNgCheckResultsAsync(checkResults);
-
-            foreach (var r in checkResults)
-            {
-                list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
-            }
-
-            var visibleItems = list.Where(f => !f.IsNg);
-
-            foreach (var item in visibleItems)
+            foreach (var item in result.Visible)
             {
                 Items.Add(item);
             }
 
-            NgFilteredCount += list.Count(f => f.IsNg);
+            NgFilteredCount += result.NgFiltered;
+            currentOffset += result.TotalCount;
 
-            currentOffset += list.Count;
             Log.Information(
                 "Loaded {@PageInfo}",
                 new
@@ -178,12 +202,6 @@ namespace WebFeedReader.ViewModels
             await FlushReadItemsAsync();
 
             isLoading = false;
-
-            var lineNumber = 0;
-            foreach (var feedItem in Items)
-            {
-                feedItem.LineNumber = ++lineNumber;
-            }
         }
 
         public async Task FlushReadItemsAsync()
