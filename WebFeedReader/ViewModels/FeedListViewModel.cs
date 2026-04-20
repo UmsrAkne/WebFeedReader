@@ -29,6 +29,7 @@ namespace WebFeedReader.ViewModels
         private bool isLoading;
         private bool hasMoreItems = true;
         private FeedSource currentSource;
+        private int? startSelectionIndex;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
@@ -92,6 +93,13 @@ namespace WebFeedReader.ViewModels
             }
 
             System.Windows.Clipboard.SetText(param);
+        });
+
+        public DelegateCommand<FeedItem> MarkRangeAsReadCommand => new ((item) =>
+        {
+            // チェックボックスが押されたときに実行されるコマンド。
+            // １つ目のチェックなら始点を設定
+            // ２つ目のチェックなら指定区間を既読に変更し、終点を始点にセットする。
         });
 
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
