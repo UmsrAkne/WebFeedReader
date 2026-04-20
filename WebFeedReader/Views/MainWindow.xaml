@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:behaviors="clr-namespace:WebFeedReader.Behaviors"
+    xmlns:controls="clr-namespace:WebFeedReader.Controls"
     xmlns:converters="clr-namespace:WebFeedReader.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -188,6 +189,8 @@
                                     Command="{Binding FeedListViewModel.ToggleFavoriteCommand}"
                                     CommandParameter="{Binding FeedListViewModel.SelectedItem}" />
 
+                                <KeyBinding Key="Escape" Command="{Binding FeedListViewModel.CancelSelectionCommand}" />
+
                             </ListBox.InputBindings>
                             <b:Interaction.Behaviors>
                                 <behaviors:InfiniteScrollBehavior Threshold="20" />
@@ -220,12 +223,30 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- フィードの行番号 -->
-                                            <TextBlock
-                                                Grid.Column="0"
-                                                Width="50"
-                                                Text="{Binding LineNumber, StringFormat=D4}"
-                                                TextAlignment="Center" />
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                <!-- フィードの行番号 -->
+                                                <TextBlock
+                                                    Width="50"
+                                                    Text="{Binding LineNumber, StringFormat=D4}"
+                                                    TextAlignment="Center" />
+
+                                                <!-- 範囲選択用チェックボックス -->
+
+                                                <controls:CustomCheckBox
+                                                    Width="50"
+                                                    Margin="5,0"
+                                                    VerticalAlignment="Center"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.MarkRangeAsReadCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    IsChecked="{Binding IsPreviewSelected}">
+                                                    <b:Interaction.Triggers>
+                                                        <b:EventTrigger EventName="MouseEnter">
+                                                            <b:InvokeCommandAction Command="{Binding DataContext.FeedListViewModel.PreviewRangeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}}" CommandParameter="{Binding}" />
+                                                        </b:EventTrigger>
+                                                    </b:Interaction.Triggers>
+                                                </controls:CustomCheckBox>
+
+                                            </StackPanel>
 
                                             <!-- 未読マーク -->
                                             <Border

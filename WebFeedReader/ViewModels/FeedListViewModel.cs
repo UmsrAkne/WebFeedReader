@@ -29,6 +29,7 @@ namespace WebFeedReader.ViewModels
         private bool isLoading;
         private bool hasMoreItems = true;
         private FeedSource currentSource;
+        private int? startSelectionIndex;
 
         public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
         {
@@ -92,6 +93,87 @@ namespace WebFeedReader.ViewModels
             }
 
             System.Windows.Clipboard.SetText(param);
+        });
+
+        public DelegateCommand<FeedItem> MarkRangeAsReadCommand => new ((item) =>
+        {
+            // チェックボックスが押されたときに実行されるコマンド。
+            // １つ目のチェックなら始点を設定
+            // ２つ目のチェックなら指定区間を既読に変更し、終点を始点にセットする。
+            if (item == null)
+            {
+                return;
+            }
+
+            // 現在のアイテムのインデックスを取得
+            var currentIndex = Items.IndexOf(item);
+            if (currentIndex < 0)
+            {
+                return;
+            }
+
+            if (startSelectionIndex == null)
+            {
+                // 1つ目のチェック: 始点のみを設定（この時点では既読化しない）
+                startSelectionIndex = currentIndex;
+                return;
+            }
+
+            // 2つ目以降のチェック: 範囲を既読にする
+            var start = Math.Min(startSelectionIndex.Value, currentIndex);
+            var end = Math.Max(startSelectionIndex.Value, currentIndex);
+
+            for (var i = start; i <= end && i < Items.Count; i++)
+            {
+                var target = Items[i];
+                if (!target.IsRead)
+                {
+                    target.IsRead = true;
+                }
+
+                // DB 反映用のキューに追加（重複は避ける）
+                if (!readItems.Contains(target))
+                {
+                    readItems.Add(target);
+                }
+            }
+
+            Items[startSelectionIndex.Value].IsPreviewSelected = false;
+
+            // 終点を新たな始点に設定
+            startSelectionIndex = currentIndex;
+        });
+
+        public DelegateCommand<FeedItem> PreviewRangeCommand => new((hoveredItem) =>
+        {
+            // 始点がなければ何もしない
+            if (startSelectionIndex == null)
+            {
+                return;
+            }
+
+            var currentIndex = Items.IndexOf(hoveredItem);
+            var start = Math.Min(startSelectionIndex.Value, currentIndex);
+            var end = Math.Max(startSelectionIndex.Value, currentIndex);
+
+            // 全アイテムのプレビュー状態を更新
+            // ※パフォーマンスが気になるなら「前回の範囲」だけを操作する
+            for (var i = 0; i < Items.Count; i++)
+            {
+                Items[i].IsPreviewSelected = i >= start && i <= end;
+            }
+        });
+
+        public DelegateCommand CancelSelectionCommand => new (() =>
+        {
+            if (startSelectionIndex != null)
+            {
+                startSelectionIndex = null;
+                foreach(var item in Items.Where(i => i.IsPreviewSelected))
+                {
+                    item.IsPreviewSelected = false;
+                }
+            }
         });
 
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>

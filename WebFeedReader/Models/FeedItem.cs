@@ -11,6 +11,7 @@ public sealed class FeedItem : BindableBase
     private bool isRead;
     private int lineNumber;
     private bool isFavorite;
+    private bool isPreviewSelected;
 
     public int Id { get; set; }
 
@@ -48,4 +49,11 @@ public sealed class FeedItem : BindableBase
 
     [NotMapped]
     public int LineNumber { get => lineNumber; set => SetProperty(ref lineNumber, value); }
+
+    [NotMapped]
+    public bool IsPreviewSelected
+    {
+        get => isPreviewSelected;
+        set => SetProperty(ref isPreviewSelected, value);
+    }
 }
