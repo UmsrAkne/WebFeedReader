@@ -220,12 +220,22 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- フィードの行番号 -->
-                                            <TextBlock
-                                                Grid.Column="0"
-                                                Width="50"
-                                                Text="{Binding LineNumber, StringFormat=D4}"
-                                                TextAlignment="Center" />
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                <!-- フィードの行番号 -->
+                                                <TextBlock
+                                                    Width="50"
+                                                    Text="{Binding LineNumber, StringFormat=D4}"
+                                                    TextAlignment="Center" />
+
+                                                <!-- 範囲選択用チェックボックス -->
+                                                <CheckBox
+                                                    Width="50"
+                                                    Margin="5,0"
+                                                    VerticalAlignment="Center"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.MarkRangeAsReadCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    IsChecked="{Binding IsPreviewSelected}" />
+                                            </StackPanel>
 
                                             <!-- 未読マーク -->
                                             <Border
