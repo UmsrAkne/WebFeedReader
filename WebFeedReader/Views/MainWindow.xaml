@@ -189,6 +189,8 @@
                                     Command="{Binding FeedListViewModel.ToggleFavoriteCommand}"
                                     CommandParameter="{Binding FeedListViewModel.SelectedItem}" />
 
+                                <KeyBinding Key="Escape" Command="{Binding FeedListViewModel.CancelSelectionCommand}" />
+
                             </ListBox.InputBindings>
                             <b:Interaction.Behaviors>
                                 <behaviors:InfiniteScrollBehavior Threshold="20" />

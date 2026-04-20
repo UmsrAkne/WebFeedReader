@@ -164,6 +164,18 @@ namespace WebFeedReader.ViewModels
             }
         });
 
+        public DelegateCommand CancelSelectionCommand => new (() =>
+        {
+            if (startSelectionIndex != null)
+            {
+                startSelectionIndex = null;
+                foreach(var item in Items.Where(i => i.IsPreviewSelected))
+                {
+                    item.IsPreviewSelected = false;
+                }
+            }
+        });
+
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
         {
             if (param == null)
