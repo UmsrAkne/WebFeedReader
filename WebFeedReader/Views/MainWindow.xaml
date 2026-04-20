@@ -234,7 +234,13 @@
                                                     VerticalAlignment="Center"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.FeedListViewModel.MarkRangeAsReadCommand}"
                                                     CommandParameter="{Binding}"
-                                                    IsChecked="{Binding IsPreviewSelected}" />
+                                                    IsChecked="{Binding IsPreviewSelected}">
+                                                    <b:Interaction.Triggers>
+                                                        <b:EventTrigger EventName="MouseEnter">
+                                                            <b:InvokeCommandAction Command="{Binding DataContext.FeedListViewModel.PreviewRangeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}}" CommandParameter="{Binding}" />
+                                                        </b:EventTrigger>
+                                                    </b:Interaction.Triggers>
+                                                </CheckBox>
                                             </StackPanel>
 
                                             <!-- 未読マーク -->

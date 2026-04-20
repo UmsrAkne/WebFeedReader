@@ -144,6 +144,26 @@ namespace WebFeedReader.ViewModels
             startSelectionIndex = currentIndex;
         });
 
+        public DelegateCommand<FeedItem> PreviewRangeCommand => new((hoveredItem) =>
+        {
+            // 始点がなければ何もしない
+            if (startSelectionIndex == null)
+            {
+                return;
+            }
+
+            var currentIndex = Items.IndexOf(hoveredItem);
+            var start = Math.Min(startSelectionIndex.Value, currentIndex);
+            var end = Math.Max(startSelectionIndex.Value, currentIndex);
+
+            // 全アイテムのプレビュー状態を更新
+            // ※パフォーマンスが気になるなら「前回の範囲」だけを操作する
+            for (var i = 0; i < Items.Count; i++)
+            {
+                Items[i].IsPreviewSelected = i >= start && i <= end;
+            }
+        });
+
         public AsyncRelayCommand<FeedItem> ToggleFavoriteCommand => new (async (param) =>
         {
             if (param == null)
