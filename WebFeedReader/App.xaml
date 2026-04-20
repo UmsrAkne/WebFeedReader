@@ -21,6 +21,10 @@
         <Color x:Key="MouseOverBackgroundColor">
             #525252
         </Color>
+
+        <SolidColorBrush x:Key="DarkBackgroundColor">
+            #333333
+        </SolidColorBrush>
         <system:Double x:Key="CommonFontSize">15</system:Double>
     </Application.Resources>
 </prism:PrismApplication>
