@@ -27,7 +27,7 @@
                                         <Grid VerticalAlignment="Center">
                                             <Border
                                                 x:Name="BoxOuter"
-                                                Width="35"
+                                                Width="50"
                                                 Height="20"
                                                 Background="{TemplateBinding Background}"
                                                 BorderBrush="#454545"
