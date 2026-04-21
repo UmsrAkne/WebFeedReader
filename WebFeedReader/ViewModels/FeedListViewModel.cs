@@ -198,6 +198,7 @@ namespace WebFeedReader.ViewModels
             hasMoreItems = true;
             currentOffset = 0;
             Items.Clear();
+            startSelectionIndex = null;
             await LoadNextPageAsync(currentSource);
         });
 
@@ -206,6 +207,7 @@ namespace WebFeedReader.ViewModels
             currentOffset = 0;
             hasMoreItems = true;
             Items.Clear();
+            startSelectionIndex = null;
 
             await LoadNextPageAsync(source);
         }
