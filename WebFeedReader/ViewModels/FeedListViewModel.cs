@@ -119,6 +119,13 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
+            if (startSelectionIndex == currentIndex)
+            {
+                // １つ目と同じ場所がチェックされた場合は、セレクションを解除する
+                startSelectionIndex = null;
+                return;
+            }
+
             // 2つ目以降のチェック: 範囲を既読にする
             var start = Math.Min(startSelectionIndex.Value, currentIndex);
             var end = Math.Max(startSelectionIndex.Value, currentIndex);
