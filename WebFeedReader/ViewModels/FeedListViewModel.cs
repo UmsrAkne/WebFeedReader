@@ -119,6 +119,13 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
+            if (startSelectionIndex == currentIndex)
+            {
+                // １つ目と同じ場所がチェックされた場合は、セレクションを解除する
+                startSelectionIndex = null;
+                return;
+            }
+
             // 2つ目以降のチェック: 範囲を既読にする
             var start = Math.Min(startSelectionIndex.Value, currentIndex);
             var end = Math.Max(startSelectionIndex.Value, currentIndex);
@@ -126,6 +133,10 @@ namespace WebFeedReader.ViewModels
             for (var i = start; i <= end && i < Items.Count; i++)
             {
                 var target = Items[i];
+
+                // 処理範囲を確定した時点で、すべてのチェックマークを解除
+                target.IsPreviewSelected = false;
+
                 if (!target.IsRead)
                 {
                     target.IsRead = true;
@@ -137,8 +148,6 @@ namespace WebFeedReader.ViewModels
                     readItems.Add(target);
                 }
             }
-
-            Items[startSelectionIndex.Value].IsPreviewSelected = false;
 
             // 終点を新たな始点に設定
             startSelectionIndex = currentIndex;
@@ -198,6 +207,7 @@ namespace WebFeedReader.ViewModels
             hasMoreItems = true;
             currentOffset = 0;
             Items.Clear();
+            startSelectionIndex = null;
             await LoadNextPageAsync(currentSource);
         });
 
@@ -206,6 +216,7 @@ namespace WebFeedReader.ViewModels
             currentOffset = 0;
             hasMoreItems = true;
             Items.Clear();
+            startSelectionIndex = null;
 
             await LoadNextPageAsync(source);
         }
