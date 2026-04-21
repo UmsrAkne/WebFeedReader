@@ -126,6 +126,10 @@ namespace WebFeedReader.ViewModels
             for (var i = start; i <= end && i < Items.Count; i++)
             {
                 var target = Items[i];
+
+                // 処理範囲を確定した時点で、すべてのチェックマークを解除
+                target.IsPreviewSelected = false;
+
                 if (!target.IsRead)
                 {
                     target.IsRead = true;
@@ -137,8 +141,6 @@ namespace WebFeedReader.ViewModels
                     readItems.Add(target);
                 }
             }
-
-            Items[startSelectionIndex.Value].IsPreviewSelected = false;
 
             // 終点を新たな始点に設定
             startSelectionIndex = currentIndex;
