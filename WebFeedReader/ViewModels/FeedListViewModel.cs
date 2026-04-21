@@ -218,6 +218,7 @@ namespace WebFeedReader.ViewModels
             Items.Clear();
             startSelectionIndex = null;
 
+            await FlushReadItemsAsync();
             await LoadNextPageAsync(source);
         }
 
