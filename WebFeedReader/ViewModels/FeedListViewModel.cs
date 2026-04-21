@@ -143,7 +143,7 @@ namespace WebFeedReader.ViewModels
                 }
 
                 // DB 反映用のキューに追加（重複は避ける）
-                if (!readItems.Contains(target))
+                if (readItems.All(f => f.Key != target.Key))
                 {
                     readItems.Add(target);
                 }
@@ -308,12 +308,28 @@ namespace WebFeedReader.ViewModels
                     return;
                 }
 
-                if (readItems.Count == 0)
+                // 競合を避けるため、操作はコピーに対して行う
+                List<FeedItem> itemsToFlush;
+                lock (readItems)
+                {
+                    itemsToFlush = readItems.ToList();
+                }
+
+                if (itemsToFlush.Count == 0)
                 {
                     return;
                 }
 
-                await repository.MarkAsReadAsync(readItems.Select(i => i.Key));
+                await repository.MarkAsReadAsync(itemsToFlush.Select(i => i.Key));
+
+                lock (readItems)
+                {
+                    // 書き込んだ分だけ削除する
+                    foreach (var item in itemsToFlush)
+                    {
+                        readItems.Remove(item);
+                    }
+                }
             }
             catch (Exception ex)
             {
