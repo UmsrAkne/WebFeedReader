@@ -196,6 +196,19 @@ namespace WebFeedReader.ViewModels
             await repository.MarkAsFavoriteAsync(param.Key, param.IsFavorite);
         });
 
+        public AsyncRelayCommand<FeedItem> MarkAsUnreadCommand => new (async (param) =>
+        {
+            if (param == null)
+            {
+                return;
+            }
+
+            param.IsRead = false;
+            readItems.Remove(param);
+
+            await repository.MarkAsUnreadAsync(param.Key);
+        });
+
         public AsyncRelayCommand LoadAsyncCommand => new (async () =>
         {
             if (currentSource == null)

@@ -189,6 +189,11 @@
                                     Command="{Binding FeedListViewModel.ToggleFavoriteCommand}"
                                     CommandParameter="{Binding FeedListViewModel.SelectedItem}" />
 
+                                <KeyBinding
+                                    Key="U"
+                                    Command="{Binding FeedListViewModel.MarkAsUnreadCommand}"
+                                    CommandParameter="{Binding FeedListViewModel.SelectedItem}" />
+
                                 <KeyBinding Key="Escape" Command="{Binding FeedListViewModel.CancelSelectionCommand}" />
 
                             </ListBox.InputBindings>

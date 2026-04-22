@@ -168,6 +168,17 @@ namespace WebFeedReader.Dbs
             }
         }
 
+        public async Task MarkAsUnreadAsync(string key)
+        {
+            await using var db = dbFactory();
+            var target = db.FeedItems.FirstOrDefault(f => f.Key == key);
+            if (target != null)
+            {
+                target.IsRead = false;
+                await db.SaveChangesAsync();
+            }
+        }
+
         public async Task MarkAsFavoriteAsync(string key, bool isFavorite)
         {
             await using var db = dbFactory();
