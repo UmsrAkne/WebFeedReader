@@ -283,6 +283,17 @@
                                                             To="{StaticResource IndicatorColor}"
                                                             Duration="0:0:0.2" />
                                                     </Storyboard>
+
+                                                    <Storyboard x:Key="FadeInStoryboard">
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.2" />
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetProperty="Height"
+                                                            To="16"
+                                                            Duration="0:0:0.2" />
+                                                    </Storyboard>
                                                 </Border.Resources>
 
                                                 <Border.Style>
@@ -298,6 +309,7 @@
                                                                 </DataTrigger.EnterActions>
                                                                 <DataTrigger.ExitActions>
                                                                     <StopStoryboard BeginStoryboardName="FadeOutBegin" />
+                                                                    <BeginStoryboard Storyboard="{StaticResource FadeInStoryboard}" />
                                                                 </DataTrigger.ExitActions>
                                                             </DataTrigger>
 
