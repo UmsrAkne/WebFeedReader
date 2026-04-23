@@ -51,6 +51,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceService>();
 
         containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
+        containerRegistry.RegisterSingleton<IReadHistoryRepository, ReadHistoryRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
         containerRegistry.Register<FeedListViewModel>();

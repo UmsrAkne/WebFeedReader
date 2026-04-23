@@ -23,7 +23,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public MainWindowViewModel()
     {
-        FeedListViewModel = new FeedListViewModel(null, null);
+        FeedListViewModel = new FeedListViewModel(null, null, null);
 
         var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
         FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));
