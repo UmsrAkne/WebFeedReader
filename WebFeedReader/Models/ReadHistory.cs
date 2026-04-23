@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebFeedReader.Dbs
+namespace WebFeedReader.Models
 {
     public class ReadHistory
     {
