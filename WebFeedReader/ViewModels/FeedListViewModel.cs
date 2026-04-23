@@ -151,6 +151,9 @@ namespace WebFeedReader.ViewModels
 
             // 終点を新たな始点に設定
             startSelectionIndex = currentIndex;
+
+            // 自動設定された始点をユーザーに明示する
+            Items[currentIndex].IsPreviewSelected = true;
         });
 
         public DelegateCommand<FeedItem> PreviewRangeCommand => new((hoveredItem) =>
