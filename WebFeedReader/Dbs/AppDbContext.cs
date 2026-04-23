@@ -1,4 +1,6 @@
-﻿using WebFeedReader.Models;
+﻿using System;
+using System.IO;
+using WebFeedReader.Models;
 
 namespace WebFeedReader.Dbs
 {
@@ -8,8 +10,15 @@ namespace WebFeedReader.Dbs
     {
         private readonly string dbPath;
 
-        public AppDbContext(string dbPath)
+        public AppDbContext(string dbPath = "")
         {
+            if (string.IsNullOrEmpty(dbPath))
+            {
+                var baseDir = AppContext.BaseDirectory;
+                var path = Path.Combine(baseDir, "Feeds.db");
+                dbPath = path;
+            }
+
             this.dbPath = dbPath;
         }
 
@@ -18,6 +27,8 @@ namespace WebFeedReader.Dbs
         public DbSet<FeedSource> FeedSources => Set<FeedSource>();
 
         public DbSet<NgWord> NgWords => Set<NgWord>();
+
+        public DbSet<ReadHistory> ReadHistories => Set<ReadHistory>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

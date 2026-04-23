@@ -21,6 +21,7 @@ namespace WebFeedReader.ViewModels
 
         private readonly IFeedItemRepository repository;
         private readonly NgWordService ngWordService;
+        private readonly IReadHistoryRepository readHistoryRepository;
         private readonly List<FeedItem> readItems = new ();
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
@@ -30,11 +31,13 @@ namespace WebFeedReader.ViewModels
         private bool hasMoreItems = true;
         private FeedSource currentSource;
         private int? startSelectionIndex;
+        private AsyncRelayCommand<string> openUrlAsyncCommand;
 
-        public FeedListViewModel(IFeedItemRepository repository, NgWordService ngWordService)
+        public FeedListViewModel(IFeedItemRepository repository, IReadHistoryRepository readHistoryRepository, NgWordService ngWordService)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
+            this.readHistoryRepository = readHistoryRepository;
             FeedSearchOption = new FeedSearchOption
             {
                 NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
@@ -62,28 +65,37 @@ namespace WebFeedReader.ViewModels
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
 
-        public DelegateCommand<string> OpenUrlCommand => new (url =>
-        {
-            if (string.IsNullOrWhiteSpace(url))
+        public AsyncRelayCommand<string> OpenUrlAsyncCommand =>
+            openUrlAsyncCommand ??= new AsyncRelayCommand<string>(async (url) =>
             {
-                return;
-            }
-
-            try
-            {
-                var psi = new ProcessStartInfo
+                if (string.IsNullOrWhiteSpace(url))
                 {
-                    FileName = url,
-                    UseShellExecute = true,
-                };
+                    return;
+                }
 
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-        });
+                try
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true,
+                    };
+
+                    Process.Start(psi);
+
+                    var history = new ReadHistory
+                    {
+                        FeedItemId = SelectedItem.Id,
+                        ReadAt = DateTime.Now,
+                    };
+
+                    await readHistoryRepository.AddAsync(history);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            });
 
         public DelegateCommand<string> CopyToClipboardCommand => new (param =>
         {
@@ -151,6 +163,9 @@ namespace WebFeedReader.ViewModels
 
             // 終点を新たな始点に設定
             startSelectionIndex = currentIndex;
+
+            // 自動設定された始点をユーザーに明示する
+            Items[currentIndex].IsPreviewSelected = true;
         });
 
         public DelegateCommand<FeedItem> PreviewRangeCommand => new((hoveredItem) =>
@@ -194,6 +209,19 @@ namespace WebFeedReader.ViewModels
 
             param.IsFavorite = !param.IsFavorite;
             await repository.MarkAsFavoriteAsync(param.Key, param.IsFavorite);
+        });
+
+        public AsyncRelayCommand<FeedItem> MarkAsUnreadCommand => new (async (param) =>
+        {
+            if (param == null)
+            {
+                return;
+            }
+
+            param.IsRead = false;
+            readItems.Remove(param);
+
+            await repository.MarkAsUnreadAsync(param.Key);
         });
 
         public AsyncRelayCommand LoadAsyncCommand => new (async () =>

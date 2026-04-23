@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Serilog;
 using WebFeedReader.Api;
@@ -50,6 +51,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IFeedSourceSyncService, FeedSourceService>();
 
         containerRegistry.RegisterSingleton<IFeedItemRepository, FeedItemRepository>();
+        containerRegistry.RegisterSingleton<IReadHistoryRepository, ReadHistoryRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
         containerRegistry.Register<FeedListViewModel>();
@@ -81,7 +83,20 @@ public partial class App
             .CreateLogger();
 
         var context = Container.Resolve<AppDbContext>();
-        DatabaseInitializer.EnsureDatabase(context);
+
+        try
+        {
+            // 未適用のマイグレーションがあれば実行し、なければ何もしない
+            context.Database.Migrate();
+
+            Log.Information("Database migration completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Database migration failed.");
+            MessageBox.Show("データベースの更新に失敗しました。アプリを終了します。");
+            Current.Shutdown();
+        }
     }
 
     protected override void OnInitialized()

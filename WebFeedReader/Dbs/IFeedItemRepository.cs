@@ -14,6 +14,8 @@ namespace WebFeedReader.Dbs
 
         Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, FeedSearchOption feedSearchOption);
 
+        Task MarkAsUnreadAsync(string key);
+
         Task MarkAsReadAsync(IEnumerable<string> keys);
 
         Task MarkAsFavoriteAsync(string key, bool isFavorite);
