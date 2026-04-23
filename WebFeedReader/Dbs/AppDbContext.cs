@@ -28,6 +28,8 @@ namespace WebFeedReader.Dbs
 
         public DbSet<NgWord> NgWords => Set<NgWord>();
 
+        public DbSet<ReadHistory> ReadHistories => Set<ReadHistory>();
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite($"Data Source={dbPath}");
