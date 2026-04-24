@@ -219,6 +219,30 @@
                                             </b:EventTrigger>
                                         </b:Interaction.Triggers>
 
+                                        <ContentControl.Style>
+                                            <Style TargetType="ContentControl">
+
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Style.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetProperty="Opacity"
+                                                                    To="1"
+                                                                    Duration="0:0:0.5">
+                                                                    <DoubleAnimation.EasingFunction>
+                                                                        <ExponentialEase EasingMode="EaseOut" Exponent="7" />
+                                                                    </DoubleAnimation.EasingFunction>
+                                                                </DoubleAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
+
+
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />

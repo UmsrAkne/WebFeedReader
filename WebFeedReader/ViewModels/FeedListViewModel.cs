@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -304,9 +305,22 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
-            foreach (var item in result.Visible)
+            var chunkSize = 3; // 1回に追加する量
+            var list = result.Visible.ToList();
+
+            for (var i = 0; i < list.Count; i += chunkSize)
             {
-                Items.Add(item);
+                var itemsToAdd = list.Skip(i).Take(chunkSize);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    foreach (var item in itemsToAdd)
+                    {
+                        Items.Add(item);
+                    }
+                });
+
+                await Task.Delay(50); // 塊ごとに少し長めのウェイト
             }
 
             NgFilteredCount += result.NgFiltered;
