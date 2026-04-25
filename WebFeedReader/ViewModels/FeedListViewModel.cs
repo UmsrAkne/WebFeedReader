@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
@@ -23,6 +24,8 @@ namespace WebFeedReader.ViewModels
         private readonly IReadHistoryRepository readHistoryRepository;
         private readonly List<FeedItem> readItems = new ();
         private readonly PaginationStatus paginationStatus = new ();
+        private readonly SemaphoreSlim loadSemaphore = new (1, 1);
+        private CancellationTokenSource cts;
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
         private int ngFilteredCount;
@@ -58,6 +61,8 @@ namespace WebFeedReader.ViewModels
         }
 
         public FeedSearchOption FeedSearchOption { get; private set; }
+
+        public bool IsLoading => paginationStatus.IsLoading;
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
 
@@ -227,6 +232,9 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
+
             // ロードの状態をリセットする
             paginationStatus.HasMoreItems = true;
             paginationStatus.CurrentOffset = 0;
@@ -237,6 +245,9 @@ namespace WebFeedReader.ViewModels
 
         public async Task OnSourceSelectedAsync(FeedSource source)
         {
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
+
             paginationStatus.CurrentOffset = 0;
             paginationStatus.HasMoreItems = true;
             Items.Clear();
@@ -248,101 +259,146 @@ namespace WebFeedReader.ViewModels
 
         public async Task LoadNextPageAsync(FeedSource source)
         {
-            paginationStatus.CurrentSource = source;
-
-            // !hasMoreItems を外すと、スクロール終端で無限ロードが起こるので絶対必須。
-            if (paginationStatus.IsLoading || !paginationStatus.HasMoreItems)
+            if (cts == null || cts.IsCancellationRequested)
             {
-                return;
+                cts = new CancellationTokenSource();
             }
 
-            paginationStatus.IsLoading = true;
+            var token = cts.Token;
 
-            // UI スレッドで必要な情報だけをスナップショット
-            var offset = paginationStatus.CurrentOffset;
-            var pageSize = paginationStatus.PageSize;
-            var searchOption = FeedSearchOption;
-            var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
-
-            // 重い処理（DB 取得、NG チェック、前処理）はバックグラウンドで実行
-            var result = await Task.Run(async () =>
+            await loadSemaphore.WaitAsync(token);
+            try
             {
-                var list = await repository.GetBySourceIdPagedAsync(source.Id, offset, pageSize, searchOption);
-                if (list.Count == 0)
+                paginationStatus.CurrentSource = source;
+
+                // !hasMoreItems を外すと、スクロール終端で無限ロードが起こるので絶対必須。
+                if (paginationStatus.IsLoading || !paginationStatus.HasMoreItems)
                 {
-                    return (Visible: new List<FeedItem>(), TotalCount: 0, NgFiltered: 0);
+                    return;
                 }
 
-                // NG チェックと反映
-                var checkResults = await ngWordService.Check(list);
-                await repository.ApplyNgCheckResultsAsync(checkResults);
-                foreach (var r in checkResults)
-                {
-                    list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
-                }
+                paginationStatus.IsLoading = true;
 
-                // 非表示対象を除外し、行番号を事前に設定
-                var visible = list.Where(f => !f.IsNg).ToList();
-                for (var i = 0; i < visible.Count; i++)
-                {
-                    visible[i].LineNumber = baseLineNumber + i;
-                }
+                // UI スレッドで必要な情報だけをスナップショット
+                var offset = paginationStatus.CurrentOffset;
+                var pageSize = paginationStatus.PageSize;
+                var searchOption = FeedSearchOption;
+                var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
 
-                var ngCount = list.Count(f => f.IsNg);
-                return (Visible: visible, TotalCount: list.Count, NgFiltered: ngCount);
-            });
-
-            // UI スレッドに戻って Items に追加と各種カウンタ更新
-            if (result.TotalCount == 0)
-            {
-                paginationStatus.HasMoreItems = false;
-                paginationStatus.IsLoading = false;
-                return;
-            }
-
-            var chunkSize = 1; // 1回に追加する量。徐々に増やす。
-            var list = result.Visible.ToList();
-
-            for (var i = 0; i < list.Count; i += chunkSize)
-            {
-                var itemsToAdd = list.Skip(i).Take(chunkSize);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    foreach (var item in itemsToAdd)
+                // 重い処理（DB 取得、NG チェック、前処理）はバックグラウンドで実行
+                var result = await Task.Run(
+                    async () =>
                     {
-                        Items.Add(item);
-                    }
-                });
+                        var list = await repository.GetBySourceIdPagedAsync(source.Id, offset, pageSize, searchOption);
+                        if (list.Count == 0)
+                        {
+                            return (Visible: new List<FeedItem>(), TotalCount: 0, NgFiltered: 0);
+                        }
 
-                const int batchThreshold = 40; // 表示されるのは 30 件程度が最大だが、多めにとっておく
-                if (i >= batchThreshold)
+                        token.ThrowIfCancellationRequested();
+
+                        // NG チェックと反映
+                        var checkResults = await ngWordService.Check(list);
+                        await repository.ApplyNgCheckResultsAsync(checkResults);
+                        foreach (var r in checkResults)
+                        {
+                            list.First(i => i.Id == r.FeedId).IsNg = r.IsNg;
+                        }
+
+                        token.ThrowIfCancellationRequested();
+
+                        // 非表示対象を除外し、行番号を事前に設定
+                        var visible = list.Where(f => !f.IsNg).ToList();
+                        for (var i = 0; i < visible.Count; i++)
+                        {
+                            visible[i].LineNumber = baseLineNumber + i;
+                        }
+
+                        var ngCount = list.Count(f => f.IsNg);
+                        return (Visible: visible, TotalCount: list.Count, NgFiltered: ngCount);
+                    },
+                    token);
+
+                // UI スレッドに戻って Items に追加と各種カウンタ更新
+                if (result.TotalCount == 0)
                 {
-                    // 画面外の要素の追加までユーザーに見せる必要はないので一括追加
-                    var remainingItems = list.Skip(i + chunkSize);
-                    Items.AddRange(remainingItems);
-                    break;
+                    paginationStatus.HasMoreItems = false;
+                    paginationStatus.IsLoading = false;
+                    return;
                 }
 
-                chunkSize++; // 処理一回毎に追加量を増やす。
-                await Task.Delay(50); // 塊ごとに少し長めのウェイト
-            }
+                var chunkSize = 1; // 1回に追加する量。徐々に増やす。
+                var list = result.Visible.ToList();
 
-            NgFilteredCount += result.NgFiltered;
-            paginationStatus.CurrentOffset += result.TotalCount;
-
-            Log.Information(
-                "Loaded {@PageInfo}",
-                new
+                for (var i = 0; i < list.Count; i += chunkSize)
                 {
-                    VisibleCount = Items.Count,
-                    NgFilteredCount,
-                    Offset = paginationStatus.CurrentOffset,
-                });
+                    token.ThrowIfCancellationRequested();
 
-            await FlushReadItemsAsync();
+                    var itemsToAdd = list.Skip(i).Take(chunkSize).ToList();
 
-            paginationStatus.IsLoading = false;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        foreach (var item in itemsToAdd)
+                        {
+                            // キャンセルされていたら追加を中断
+                            if (token.IsCancellationRequested)
+                            {
+                                break;
+                            }
+
+                            Items.Add(item);
+                        }
+                    });
+
+                    const int batchThreshold = 40; // 表示されるのは 30 件程度が最大だが、多めにとっておく
+                    if (i >= batchThreshold)
+                    {
+                        // 画面外の要素の追加までユーザーに見せる必要はないので一括追加
+                        var remainingItems = list.Skip(i + chunkSize).ToList();
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            foreach (var item in remainingItems)
+                            {
+                                if (token.IsCancellationRequested)
+                                {
+                                    break;
+                                }
+
+                                Items.Add(item);
+                            }
+                        });
+                        break;
+                    }
+
+                    chunkSize++; // 処理一回毎に追加量を増やす。
+                    await Task.Delay(50, token); // 塊ごとに少し長めのウェイト
+                }
+
+                token.ThrowIfCancellationRequested();
+
+                NgFilteredCount += result.NgFiltered;
+                paginationStatus.CurrentOffset += result.TotalCount;
+
+                Log.Information(
+                    "Loaded {@PageInfo}",
+                    new
+                    {
+                        VisibleCount = Items.Count,
+                        NgFilteredCount,
+                        Offset = paginationStatus.CurrentOffset,
+                    });
+
+                await FlushReadItemsAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Information("LoadNextPageAsync was cancelled.");
+            }
+            finally
+            {
+                paginationStatus.IsLoading = false;
+                loadSemaphore.Release();
+            }
         }
 
         public async Task FlushReadItemsAsync()

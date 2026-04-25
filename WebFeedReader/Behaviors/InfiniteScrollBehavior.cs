@@ -76,7 +76,7 @@ namespace WebFeedReader.Behaviors
 
         // イベントハンドラであるため、void 必須。
         // ReSharper disable once AsyncVoidEventHandlerMethod
-        private async void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+        private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             if (scrollViewer == null)
             {
@@ -102,7 +102,13 @@ namespace WebFeedReader.Behaviors
                 return;
             }
 
-            await feedListVm.LoadNextPageAsync(currentSource);
+            if (feedListVm.IsLoading)
+            {
+                return;
+            }
+
+            // 非同期メソッドを呼び出すが待機はしない
+            _ = feedListVm.LoadNextPageAsync(currentSource);
         }
     }
 }
