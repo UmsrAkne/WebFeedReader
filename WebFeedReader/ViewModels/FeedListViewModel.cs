@@ -305,7 +305,7 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
-            var chunkSize = 3; // 1回に追加する量
+            var chunkSize = 1; // 1回に追加する量。徐々に増やす。
             var list = result.Visible.ToList();
 
             for (var i = 0; i < list.Count; i += chunkSize)
@@ -320,6 +320,16 @@ namespace WebFeedReader.ViewModels
                     }
                 });
 
+                const int batchThreshold = 40; // 表示されるのは 30 件程度が最大だが、多めにとっておく
+                if (i >= batchThreshold)
+                {
+                    // 画面外の要素の追加までユーザーに見せる必要はないので一括追加
+                    var remainingItems = list.Skip(i + chunkSize);
+                    Items.AddRange(remainingItems);
+                    break;
+                }
+
+                chunkSize++; // 処理一回毎に追加量を増やす。
                 await Task.Delay(50); // 塊ごとに少し長めのウェイト
             }
 
