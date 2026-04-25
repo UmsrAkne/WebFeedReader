@@ -18,19 +18,14 @@ namespace WebFeedReader.ViewModels
     // ReSharper disable once ClassNeverInstantiated.Global
     public class FeedListViewModel : BindableBase
     {
-        private const int PageSize = 200;
-
         private readonly IFeedItemRepository repository;
         private readonly NgWordService ngWordService;
         private readonly IReadHistoryRepository readHistoryRepository;
         private readonly List<FeedItem> readItems = new ();
+        private readonly PaginationStatus paginationStatus = new ();
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
         private int ngFilteredCount;
-        private int currentOffset;
-        private bool isLoading;
-        private bool hasMoreItems = true;
-        private FeedSource currentSource;
         private int? startSelectionIndex;
         private AsyncRelayCommand<string> openUrlAsyncCommand;
 
@@ -227,23 +222,23 @@ namespace WebFeedReader.ViewModels
 
         public AsyncRelayCommand LoadAsyncCommand => new (async () =>
         {
-            if (currentSource == null)
+            if (paginationStatus.CurrentSource == null)
             {
                 return;
             }
 
             // ロードの状態をリセットする
-            hasMoreItems = true;
-            currentOffset = 0;
+            paginationStatus.HasMoreItems = true;
+            paginationStatus.CurrentOffset = 0;
             Items.Clear();
             startSelectionIndex = null;
-            await LoadNextPageAsync(currentSource);
+            await LoadNextPageAsync(paginationStatus.CurrentSource);
         });
 
         public async Task OnSourceSelectedAsync(FeedSource source)
         {
-            currentOffset = 0;
-            hasMoreItems = true;
+            paginationStatus.CurrentOffset = 0;
+            paginationStatus.HasMoreItems = true;
             Items.Clear();
             startSelectionIndex = null;
 
@@ -253,19 +248,19 @@ namespace WebFeedReader.ViewModels
 
         public async Task LoadNextPageAsync(FeedSource source)
         {
-            currentSource = source;
+            paginationStatus.CurrentSource = source;
 
             // !hasMoreItems を外すと、スクロール終端で無限ロードが起こるので絶対必須。
-            if (isLoading || !hasMoreItems)
+            if (paginationStatus.IsLoading || !paginationStatus.HasMoreItems)
             {
                 return;
             }
 
-            isLoading = true;
+            paginationStatus.IsLoading = true;
 
             // UI スレッドで必要な情報だけをスナップショット
-            var offset = currentOffset;
-            var pageSize = PageSize;
+            var offset = paginationStatus.CurrentOffset;
+            var pageSize = paginationStatus.PageSize;
             var searchOption = FeedSearchOption;
             var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
 
@@ -300,8 +295,8 @@ namespace WebFeedReader.ViewModels
             // UI スレッドに戻って Items に追加と各種カウンタ更新
             if (result.TotalCount == 0)
             {
-                hasMoreItems = false;
-                isLoading = false;
+                paginationStatus.HasMoreItems = false;
+                paginationStatus.IsLoading = false;
                 return;
             }
 
@@ -334,7 +329,7 @@ namespace WebFeedReader.ViewModels
             }
 
             NgFilteredCount += result.NgFiltered;
-            currentOffset += result.TotalCount;
+            paginationStatus.CurrentOffset += result.TotalCount;
 
             Log.Information(
                 "Loaded {@PageInfo}",
@@ -342,12 +337,12 @@ namespace WebFeedReader.ViewModels
                 {
                     VisibleCount = Items.Count,
                     NgFilteredCount,
-                    Offset = currentOffset,
+                    Offset = paginationStatus.CurrentOffset,
                 });
 
             await FlushReadItemsAsync();
 
-            isLoading = false;
+            paginationStatus.IsLoading = false;
         }
 
         public async Task FlushReadItemsAsync()
