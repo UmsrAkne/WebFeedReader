@@ -333,6 +333,7 @@ namespace WebFeedReader.ViewModels
                 for (var i = 0; i < list.Count; i += chunkSize)
                 {
                     token.ThrowIfCancellationRequested();
+                    chunkSize++; // 処理一回毎に追加量を増やす。
 
                     var itemsToAdd = list.Skip(i).Take(chunkSize).ToList();
 
@@ -370,7 +371,6 @@ namespace WebFeedReader.ViewModels
                         break;
                     }
 
-                    chunkSize++; // 処理一回毎に追加量を増やす。
                     await Task.Delay(50, token); // 塊ごとに少し長めのウェイト
                 }
 
