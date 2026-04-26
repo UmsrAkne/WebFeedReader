@@ -327,20 +327,14 @@ namespace WebFeedReader.ViewModels
                     return;
                 }
 
-                var chunkSize = 1; // 1回に追加する量。徐々に増やす。
                 var list = result.Visible.ToList();
-
-                for (var i = 0; i < list.Count; i += chunkSize)
+                await foreach (var chunk in EnumerableStreamer.GetChunkyStream(list, 1, 40, token))
                 {
-                    token.ThrowIfCancellationRequested();
-
-                    var itemsToAdd = list.Skip(i).Take(chunkSize).ToList();
-
-                    Application.Current.Dispatcher.Invoke(() =>
+                    // チャンク単位で Dispatcher に投げる
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        foreach (var item in itemsToAdd)
+                        foreach (var item in chunk)
                         {
-                            // キャンセルされていたら追加を中断
                             if (token.IsCancellationRequested)
                             {
                                 break;
@@ -349,29 +343,6 @@ namespace WebFeedReader.ViewModels
                             Items.Add(item);
                         }
                     });
-
-                    const int batchThreshold = 40; // 表示されるのは 30 件程度が最大だが、多めにとっておく
-                    if (i >= batchThreshold)
-                    {
-                        // 画面外の要素の追加までユーザーに見せる必要はないので一括追加
-                        var remainingItems = list.Skip(i + chunkSize).ToList();
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            foreach (var item in remainingItems)
-                            {
-                                if (token.IsCancellationRequested)
-                                {
-                                    break;
-                                }
-
-                                Items.Add(item);
-                            }
-                        });
-                        break;
-                    }
-
-                    chunkSize++; // 処理一回毎に追加量を増やす。
-                    await Task.Delay(50, token); // 塊ごとに少し長めのウェイト
                 }
 
                 token.ThrowIfCancellationRequested();
