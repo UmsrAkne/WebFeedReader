@@ -240,6 +240,7 @@ namespace WebFeedReader.ViewModels
             paginationStatus.CurrentOffset = 0;
             Items.Clear();
             startSelectionIndex = null;
+            await FlushReadItemsAsync();
             await LoadNextPageAsync(paginationStatus.CurrentSource);
         });
 
@@ -358,8 +359,6 @@ namespace WebFeedReader.ViewModels
                         NgFilteredCount,
                         Offset = paginationStatus.CurrentOffset,
                     });
-
-                await FlushReadItemsAsync();
             }
             catch (OperationCanceledException)
             {
