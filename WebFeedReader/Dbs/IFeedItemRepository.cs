@@ -21,5 +21,7 @@ namespace WebFeedReader.Dbs
         Task MarkAsFavoriteAsync(string key, bool isFavorite);
 
         Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results);
+
+        Task<int> GetRecentUnreadSafeCountAsync(int sourceId, int currentNgVersion);
     }
 }

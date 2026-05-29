@@ -123,6 +123,7 @@
                                 </DataTemplate.Resources>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Padding="10,0" Text="{Binding UnreadCount, StringFormat=({0})}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

@@ -19,6 +19,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     private readonly IFeedSourceSyncService feedSourceSyncService;
     private readonly IFeedSourceRepository feedSourceRepository;
     private readonly IFeedSyncService feedSyncService;
+    private readonly IFeedItemRepository feedItemRepository;
     private bool isLoading;
 
     public MainWindowViewModel()
@@ -41,6 +42,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedSyncService feedSyncService,
+        IFeedItemRepository feedItemRepository,
         FeedListViewModel feedListViewModel,
         NgListPageViewModel ngListPageViewModel,
         FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
@@ -50,6 +52,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
+        this.feedItemRepository = feedItemRepository;
         FeedListViewModel = feedListViewModel;
         NgListPageViewModel = ngListPageViewModel;
         FeedSourceCreatePageViewModel = feedSourceCreatePageViewModel;
@@ -89,6 +92,11 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
+            var ngCheckVersion = AppSettings.Load().NgWordListVersion;
+            foreach (var feedSource in FeedSourceListViewModel.Items)
+            {
+                feedSource.UnreadCount = await feedItemRepository.GetRecentUnreadSafeCountAsync(feedSource.Id, ngCheckVersion);
+            }
         }
         catch(Exception ex)
         {
