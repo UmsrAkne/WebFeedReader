@@ -5,7 +5,7 @@ using WebFeedReader.Models;
 
 namespace WebFeedReader.ViewModels
 {
-    public class FeedSourceListViewModel : BindableBase
+    public class FeedSourceListViewModel : BindableBase, IUnreadCountProvider
     {
         private ObservableCollection<FeedSource> items = new ();
 
@@ -24,6 +24,16 @@ namespace WebFeedReader.ViewModels
                 {
                     SelectedItemChanged?.Invoke(value);
                 }
+            }
+        }
+
+        public int SelectedUnreadCount
+        {
+            get => SelectedItem.UnreadCount;
+            set
+            {
+                RaisePropertyChanged();
+                SelectedItem.UnreadCount = value;
             }
         }
     }
