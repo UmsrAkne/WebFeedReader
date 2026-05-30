@@ -58,12 +58,7 @@ namespace WebFeedReader.ViewModels
             {
                 if (value != null)
                 {
-                    if (!value.IsRead)
-                    {
-                        unreadCountProvider.SelectedUnreadCount -= 1;
-                        value.IsRead = true;
-                        readItems.Add(value);
-                    }
+                    MarkAsRead(value);
                 }
 
                 SetProperty(ref selectedItem, value);
@@ -159,17 +154,7 @@ namespace WebFeedReader.ViewModels
 
                 // 処理範囲を確定した時点で、すべてのチェックマークを解除
                 target.IsPreviewSelected = false;
-
-                if (!target.IsRead)
-                {
-                    target.IsRead = true;
-                }
-
-                // DB 反映用のキューに追加（重複は避ける）
-                if (readItems.All(f => f.Key != target.Key))
-                {
-                    readItems.Add(target);
-                }
+                MarkAsRead(target);
             }
 
             // 終点を新たな始点に設定
@@ -422,6 +407,19 @@ namespace WebFeedReader.ViewModels
             finally
             {
                 readItems.Clear();
+            }
+        }
+
+        private void MarkAsRead(FeedItem item)
+        {
+            if (!item.IsRead)
+            {
+                item.IsRead = true;
+                unreadCountProvider.SelectedUnreadCount -= 1;
+                if (readItems.IndexOf(item) == -1)
+                {
+                    readItems.Add(item);
+                }
             }
         }
     }
