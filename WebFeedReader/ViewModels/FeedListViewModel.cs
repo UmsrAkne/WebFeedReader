@@ -25,6 +25,7 @@ namespace WebFeedReader.ViewModels
         private readonly List<FeedItem> readItems = new ();
         private readonly PaginationStatus paginationStatus = new ();
         private readonly SemaphoreSlim loadSemaphore = new (1, 1);
+        private readonly IUnreadCountProvider unreadCountProvider;
         private CancellationTokenSource cts;
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
@@ -32,11 +33,16 @@ namespace WebFeedReader.ViewModels
         private int? startSelectionIndex;
         private AsyncRelayCommand<string> openUrlAsyncCommand;
 
-        public FeedListViewModel(IFeedItemRepository repository, IReadHistoryRepository readHistoryRepository, NgWordService ngWordService)
+        public FeedListViewModel(
+            IFeedItemRepository repository,
+            IReadHistoryRepository readHistoryRepository,
+            NgWordService ngWordService,
+            IUnreadCountProvider unreadCountProvider)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
             this.readHistoryRepository = readHistoryRepository;
+            this.unreadCountProvider = unreadCountProvider;
             FeedSearchOption = new FeedSearchOption
             {
                 NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
@@ -52,8 +58,12 @@ namespace WebFeedReader.ViewModels
             {
                 if (value != null)
                 {
-                    value.IsRead = true;
-                    readItems.Add(value);
+                    if (!value.IsRead)
+                    {
+                        unreadCountProvider.SelectedUnreadCount -= 1;
+                        value.IsRead = true;
+                        readItems.Add(value);
+                    }
                 }
 
                 SetProperty(ref selectedItem, value);

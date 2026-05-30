@@ -19,11 +19,12 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     private readonly IFeedSourceSyncService feedSourceSyncService;
     private readonly IFeedSourceRepository feedSourceRepository;
     private readonly IFeedSyncService feedSyncService;
+    private readonly IFeedItemRepository feedItemRepository;
     private bool isLoading;
 
     public MainWindowViewModel()
     {
-        FeedListViewModel = new FeedListViewModel(null, null, null);
+        FeedListViewModel = new FeedListViewModel(null, null, null, null);
 
         var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
         FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));
@@ -41,19 +42,23 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedSyncService feedSyncService,
+        IFeedItemRepository feedItemRepository,
         FeedListViewModel feedListViewModel,
         NgListPageViewModel ngListPageViewModel,
         FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
-        SettingPageViewModel settingPageViewModel)
+        SettingPageViewModel settingPageViewModel,
+        FeedSourceListViewModel feedListVm)
     {
         this.appSettings = appSettings;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
+        this.feedItemRepository = feedItemRepository;
         FeedListViewModel = feedListViewModel;
         NgListPageViewModel = ngListPageViewModel;
         FeedSourceCreatePageViewModel = feedSourceCreatePageViewModel;
         SettingPageViewModel = settingPageViewModel;
+        FeedSourceListViewModel = feedListVm;
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
@@ -68,7 +73,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
 
-    public FeedSourceListViewModel FeedSourceListViewModel { get; set; } = new ();
+    public FeedSourceListViewModel FeedSourceListViewModel { get; set; }
 
     public FeedListViewModel FeedListViewModel { get; private set; }
 
@@ -89,6 +94,11 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
+            var ngCheckVersion = AppSettings.Load().NgWordListVersion;
+            foreach (var feedSource in FeedSourceListViewModel.Items)
+            {
+                feedSource.UnreadCount = await feedItemRepository.GetRecentUnreadSafeCountAsync(feedSource.Id, ngCheckVersion);
+            }
         }
         catch(Exception ex)
         {

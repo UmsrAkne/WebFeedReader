@@ -148,6 +148,27 @@ namespace WebFeedReader.Dbs
                 .ToListAsync();
         }
 
+        public async Task<int> GetRecentUnreadSafeCountAsync(int sourceId, int currentNgVersion)
+        {
+            await using var db = dbFactory();
+
+            // 未読、直近1ヶ月以内、NGワード除外の条件をSQLで組み立てる
+            var whereUnread = " AND IsRead = 0";
+            var whereDate = " AND Published >= datetime('now', '-1 month', 'localtime')";
+            var whereNgWord = " AND NOT (NgWordCheckVersion >= {1} AND IsNg = 1)";
+
+            var sql =
+                "SELECT COUNT(*) As Value FROM FeedItems "
+                + "WHERE SourceId = {0}"
+                + whereUnread
+                + whereDate
+                + whereNgWord;
+
+            return await db.Database
+                .SqlQueryRaw<int>(sql, sourceId, currentNgVersion)
+                .SingleAsync();
+        }
+
         public async Task MarkAsReadAsync(IEnumerable<string> keys)
         {
             var keyList = keys.Distinct().ToList();

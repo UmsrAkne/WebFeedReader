@@ -54,7 +54,11 @@ public partial class App
         containerRegistry.RegisterSingleton<IReadHistoryRepository, ReadHistoryRepository>();
         containerRegistry.RegisterSingleton<IFeedSyncService, FeedSyncService>();
 
-        containerRegistry.Register<FeedListViewModel>();
+        containerRegistry.RegisterSingleton<FeedSourceListViewModel>();
+        containerRegistry.RegisterSingleton<IUnreadCountProvider>(container =>
+            container.Resolve<FeedSourceListViewModel>());
+
+        containerRegistry.RegisterSingleton<FeedListViewModel>();
         containerRegistry.Register<SettingPageViewModel>();
         containerRegistry.Register<NgListPageViewModel>();
         containerRegistry.Register<FeedSourceCreatePageViewModel>();
