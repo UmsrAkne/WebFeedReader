@@ -6,6 +6,7 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.Resources>
         <SolidColorBrush x:Key="LightBorderBrush" Color="LightSlateGray" />
+        <SolidColorBrush x:Key="MediumBackgroundBrush" Color="#555588" />
         <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#333333" />
         <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#444444" />
 
