@@ -279,7 +279,7 @@ namespace WebFeedReader.ViewModels
                 var offset = paginationStatus.CurrentOffset;
                 var pageSize = paginationStatus.PageSize;
                 var searchOption = FeedSearchOption;
-                var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber) : 0;
+                var baseLineNumber = Items.Count != 0 ? Items.Max(i => i.LineNumber + 1) : 1;
 
                 // 重い処理（DB 取得、NG チェック、前処理）はバックグラウンドで実行
                 var result = await Task.Run(
