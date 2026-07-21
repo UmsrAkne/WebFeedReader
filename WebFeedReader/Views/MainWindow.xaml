@@ -7,6 +7,7 @@
     xmlns:controls="clr-namespace:WebFeedReader.Controls"
     xmlns:converters="clr-namespace:WebFeedReader.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mat="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:WebFeedReader.Models"
     xmlns:prism="http://prismlibrary.com/"
@@ -25,7 +26,7 @@
     </Window.Resources>
 
     <TabControl Background="{StaticResource ControlBackgroundBrush}">
-        <TabItem Padding="15,4">
+        <TabItem Padding="15,4" Foreground="White">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Main" />
             </TabItem.Header>
@@ -70,21 +71,25 @@
                             Command="{Binding ReloadAsyncCommand}"
                             Content="Reload" />
 
+
                         <ToggleButton
                             Width="150"
+                            Height="30"
                             Margin="10,0"
                             Padding="4"
                             Command="{Binding FeedListViewModel.LoadAsyncCommand}"
                             Content="Filter (unread)"
-                            IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsUnreadOnly}" />
+                            IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsUnreadOnly}"
+                            Style="{x:Null}" />
 
                         <ToggleButton
                             Width="200"
+                            Height="30"
                             Padding="4"
                             Command="{Binding FeedListViewModel.LoadAsyncCommand}"
                             IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsReverseOrder}">
                             <ToggleButton.Style>
-                                <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="ToggleButton">
+                                <Style TargetType="ToggleButton">
                                     <Setter Property="Content" Value="Newest first" />
                                     <Style.Triggers>
                                         <Trigger Property="IsChecked" Value="True">
@@ -670,7 +675,7 @@
             </Grid>
         </TabItem>
 
-        <TabItem Padding="15,4">
+        <TabItem Padding="15,4" Foreground="White">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Add Web site" />
             </TabItem.Header>
@@ -678,14 +683,14 @@
         </TabItem>
 
 
-        <TabItem Padding="15,4">
+        <TabItem Padding="15,4" Foreground="White">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Ng word" />
             </TabItem.Header>
             <views:NgListPage DataContext="{Binding NgListPageViewModel}" />
         </TabItem>
 
-        <TabItem Padding="15,4">
+        <TabItem Padding="15,4" Foreground="White">
             <TabItem.Header>
                 <TextBlock FontSize="{StaticResource CommonFontSize}" Text="Setting" />
             </TabItem.Header>
