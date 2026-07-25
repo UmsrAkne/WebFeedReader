@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
+using WebFeedReader.Models;
 
 namespace WebFeedReader.Api
 {
@@ -61,6 +63,21 @@ namespace WebFeedReader.Api
         {
             Log.Information("Create Source Async (DummyApiClient). {@requestINfo}", new { request.Name, request.Url, });
             await Task.Delay(2000, ct);
+        }
+
+        public Task<IEnumerable<NgWord>> GetNgWordsAsync(int lastVersion)
+        {
+            Log.Information("Get NgWords Async (DummyApiClient).");
+            Log.Information("  - lastVersion: {lastVersion}", lastVersion);
+            IEnumerable<NgWord> list = new List<NgWord>();
+            return Task.FromResult(list);
+        }
+
+        public Task PostReadStatusAsync(IEnumerable<string> feedItemKeys)
+        {
+            Log.Information("Post Read Status Async (DummyApiClient).");
+            Log.Information("  - feedItemKeys: {feedItemKeys}", feedItemKeys);
+            return Task.CompletedTask;
         }
 
         public void Dispose()
