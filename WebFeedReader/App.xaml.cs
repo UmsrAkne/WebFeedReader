@@ -103,17 +103,6 @@ public partial class App
         }
     }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        if (Current.MainWindow?.DataContext is MainWindowViewModel vm)
-        {
-            // Initialize a view model asynchronously on the UI dispatcher after shell is ready
-            Dispatcher.BeginInvoke(async () => await vm.InitializeAsync(), DispatcherPriority.Background);
-        }
-    }
-
     protected override void OnExit(ExitEventArgs e)
     {
         try
