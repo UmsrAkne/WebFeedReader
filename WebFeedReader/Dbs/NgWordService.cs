@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using WebFeedReader.Api;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
@@ -12,11 +13,13 @@ namespace WebFeedReader.Dbs
     {
         private readonly Func<AppDbContext> dbFactory;
         private readonly AppSettings appSettings;
+        private readonly IApiClient apiClient;
 
-        public NgWordService(Func<AppDbContext> dbFactory, AppSettings appSettings)
+        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient, AppSettings appSettings)
         {
             this.dbFactory = dbFactory;
             this.appSettings = appSettings;
+            this.apiClient = apiClient;
         }
 
         public async Task<IReadOnlyList<NgCheckResult>> Check(IEnumerable<FeedItem> feeds)
@@ -69,6 +72,15 @@ namespace WebFeedReader.Dbs
             await appSettings.SaveAsync();
 
             return true;
+        }
+
+        public async Task SyncNgWordsAsync(int version)
+        {
+            var list = await apiClient.GetNgWordsAsync(version);
+            foreach (var ngWord in list)
+            {
+                await AddNgWordAsync(ngWord);
+            }
         }
 
         private static bool ContainsNgWord(FeedItem feed, IReadOnlyList<string> ngWords)
