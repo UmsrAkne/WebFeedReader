@@ -21,6 +21,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     private readonly IFeedSyncService feedSyncService;
     private readonly IFeedItemRepository feedItemRepository;
     private bool isLoading;
+    private AsyncRelayCommand initializeCommand;
 
     public MainWindowViewModel()
     {
@@ -85,7 +86,13 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public AsyncRelayCommand ReloadAsyncCommand => new (async () => await ReloadAsync());
 
-    public async Task InitializeAsync()
+    public AsyncRelayCommand InitializeAsyncCommand =>
+        initializeCommand ??= new AsyncRelayCommand(async () =>
+        {
+            await InitializeAsync();
+        });
+
+    private async Task InitializeAsync()
     {
         IsLoading = true;
         try

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Serilog;
@@ -27,6 +26,21 @@ public partial class App
 
     protected override void InitializeShell(Window shell)
     {
+        var context = Container.Resolve<AppDbContext>();
+
+        try
+        {
+            // 未適用のマイグレーションがあれば実行し、なければ何もしない
+            context.Database.Migrate();
+            Log.Information("Database migration completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Database migration failed.");
+            MessageBox.Show("データベースの更新に失敗しました。アプリを終了します。");
+            Current.Shutdown();
+        }
+
         // 起動時に DataContext (ViewModel) を変数に入れておく
         mainWindowVm = shell.DataContext as MainWindowViewModel;
         base.InitializeShell(shell);
@@ -74,8 +88,6 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
-
         var baseDir = AppContext.BaseDirectory;
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -86,32 +98,7 @@ public partial class App
                 retainedFileCountLimit: 7)
             .CreateLogger();
 
-        var context = Container.Resolve<AppDbContext>();
-
-        try
-        {
-            // 未適用のマイグレーションがあれば実行し、なければ何もしない
-            context.Database.Migrate();
-
-            Log.Information("Database migration completed successfully.");
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Database migration failed.");
-            MessageBox.Show("データベースの更新に失敗しました。アプリを終了します。");
-            Current.Shutdown();
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        if (Current.MainWindow?.DataContext is MainWindowViewModel vm)
-        {
-            // Initialize a view model asynchronously on the UI dispatcher after shell is ready
-            Dispatcher.BeginInvoke(async () => await vm.InitializeAsync(), DispatcherPriority.Background);
-        }
+        base.OnStartup(e);
     }
 
     protected override void OnExit(ExitEventArgs e)

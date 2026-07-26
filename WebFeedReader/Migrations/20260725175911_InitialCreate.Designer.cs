@@ -11,8 +11,8 @@ using WebFeedReader.Dbs;
 namespace WebFeedReader.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260423111124_Initial")]
-    partial class Initial
+    [Migration("20260725175911_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,6 +117,23 @@ namespace WebFeedReader.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NgWords");
+                });
+
+            modelBuilder.Entity("WebFeedReader.Models.ReadHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FeedItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ReadAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReadHistories");
                 });
 #pragma warning restore 612, 618
         }

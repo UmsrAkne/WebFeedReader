@@ -17,23 +17,6 @@ namespace WebFeedReader.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.20");
 
-            modelBuilder.Entity("WebFeedReader.Dbs.ReadHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FeedItemId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ReadAt")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ReadHistories");
-                });
-
             modelBuilder.Entity("WebFeedReader.Models.FeedItem", b =>
                 {
                     b.Property<int>("Id")
@@ -131,6 +114,23 @@ namespace WebFeedReader.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NgWords");
+                });
+
+            modelBuilder.Entity("WebFeedReader.Models.ReadHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FeedItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ReadAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReadHistories");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
 namespace WebFeedReader.Api
@@ -58,6 +61,16 @@ namespace WebFeedReader.Api
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await PostAsync(url, content, ct);
+        }
+
+        public Task<IEnumerable<NgWord>> GetNgWordsAsync(int lastVersion)
+        {
+            return Task.FromResult(Enumerable.Empty<NgWord>());
+        }
+
+        public Task PostReadStatusAsync(IEnumerable<string> feedItemKeys)
+        {
+            return Task.CompletedTask;
         }
 
         private async Task PostAsync(string url, HttpContent content, CancellationToken ct)

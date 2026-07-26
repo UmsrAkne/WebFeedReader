@@ -21,6 +21,12 @@
     Background="{StaticResource WindowBackgroundBrush}"
     mc:Ignorable="d">
 
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding InitializeAsyncCommand}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+
     <Window.Resources>
         <converters:UtcToJstConverter x:Key="UtcToJstConverter" />
     </Window.Resources>
