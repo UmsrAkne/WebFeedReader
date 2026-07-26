@@ -102,16 +102,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IsLoading = true;
         try
         {
-            var ngWords = await ngWordService.GetAllNgWordsAsync();
-            var latestNgWordVersion = 0;
-            var ngWordList = ngWords.ToList();
-            if (ngWordList.Any())
-            {
-                latestNgWordVersion = ngWordList.Max(w => w.CreatedAt);
-            }
-
-            await ngWordService.SyncNgWordsAsync(latestNgWordVersion);
-
+            await ngWordService.SyncNgWordsFromServerAsync();
             await SyncFeedsAsync(appSettings.LastFeedsUpdate);
 
             var sources = await feedSourceRepository.GetAllAsync();
