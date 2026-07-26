@@ -22,5 +22,8 @@ namespace WebFeedReader.Models
 
         [JsonPropertyName("source_id")]
         public int SourceId { get; init; }
+
+        [JsonPropertyName("is_ng")]
+        public bool IsNg { get; init; }
     }
 }
