@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -68,9 +69,17 @@ namespace WebFeedReader.Api
             return Task.FromResult(Enumerable.Empty<NgWord>());
         }
 
-        public Task PostReadStatusAsync(IEnumerable<int> feedItemIds)
+        public async Task PostReadStatusAsync(IEnumerable<int> feedItemIds)
         {
-            return Task.CompletedTask;
+            var url = $"http://{appSettings.ServerUrlWithPort}/feeds/read";
+            var payload = new { ids = feedItemIds, };
+            using var client = new HttpClient();
+
+            // シリアライズ
+            var response = await client.PostAsJsonAsync(url, payload);
+
+            // レスポンスのエラーチェック
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task PostAsync(string url, HttpContent content, CancellationToken ct)
