@@ -45,6 +45,11 @@
                 <TextBox DockPanel.Dock="Right" Text="{Binding ApiBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
             </DockPanel>
 
+            <DockPanel>
+                <TextBlock VerticalAlignment="Center" Text="Server URL with port" />
+                <TextBox DockPanel.Dock="Right" Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+
 
             <!-- Editable fields -->
             <DockPanel>

@@ -13,6 +13,7 @@ namespace WebFeedReader.ViewModels
         private int fetchIntervalMinutes;
         private bool enableDebugLog;
         private string sshUserName;
+        private string serverUrl;
 
         public SettingPageViewModel(AppSettings appSettings)
         {
@@ -32,6 +33,8 @@ namespace WebFeedReader.ViewModels
 
         // Editable properties
         public string ApiBaseUrl { get => apiBaseUrl; set => SetProperty(ref apiBaseUrl, value); }
+
+        public string ServerUrl { get => serverUrl; set => SetProperty(ref serverUrl, value); }
 
         public int FetchIntervalMinutes
         {
