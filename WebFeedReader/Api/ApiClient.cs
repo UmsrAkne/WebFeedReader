@@ -68,7 +68,7 @@ namespace WebFeedReader.Api
             return Task.FromResult(Enumerable.Empty<NgWord>());
         }
 
-        public Task PostReadStatusAsync(IEnumerable<string> feedItemKeys)
+        public Task PostReadStatusAsync(IEnumerable<int> feedItemIds)
         {
             return Task.CompletedTask;
         }

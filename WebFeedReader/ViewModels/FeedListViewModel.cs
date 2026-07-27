@@ -395,7 +395,7 @@ namespace WebFeedReader.ViewModels
 
                 var keys = itemsToFlush.Select(i => i.Key).ToList();
                 await repository.MarkAsReadAsync(keys);
-                await apiClient.PostReadStatusAsync(keys);
+                await apiClient.PostReadStatusAsync(itemsToFlush.Select(i => i.Id));
 
                 lock (readItems)
                 {

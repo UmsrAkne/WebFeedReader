@@ -90,10 +90,10 @@ namespace WebFeedReader.Api
             return Task.FromResult(list);
         }
 
-        public Task PostReadStatusAsync(IEnumerable<string> feedItemKeys)
+        public Task PostReadStatusAsync(IEnumerable<int> feedItemIds)
         {
             Log.Information("Post Read Status Async (DummyApiClient).");
-            Log.Information("  - feedItemKeys: {feedItemKeys}", feedItemKeys);
+            Log.Information("  - feedItemKeys: {feedItemKeys}", feedItemIds);
             return Task.CompletedTask;
         }
 
