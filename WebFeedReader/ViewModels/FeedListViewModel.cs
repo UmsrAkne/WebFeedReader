@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
 using Serilog;
+using WebFeedReader.Api;
 using WebFeedReader.Dbs;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
@@ -32,17 +33,20 @@ namespace WebFeedReader.ViewModels
         private int ngFilteredCount;
         private int? startSelectionIndex;
         private AsyncRelayCommand<string> openUrlAsyncCommand;
+        private readonly IApiClient apiClient;
 
         public FeedListViewModel(
             IFeedItemRepository repository,
             IReadHistoryRepository readHistoryRepository,
             NgWordService ngWordService,
+            IApiClient apiClient,
             IUnreadCountProvider unreadCountProvider)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
             this.readHistoryRepository = readHistoryRepository;
             this.unreadCountProvider = unreadCountProvider;
+            this.apiClient = apiClient;
             FeedSearchOption = new FeedSearchOption
             {
                 NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
@@ -389,7 +393,9 @@ namespace WebFeedReader.ViewModels
                     return;
                 }
 
-                await repository.MarkAsReadAsync(itemsToFlush.Select(i => i.Key));
+                var keys = itemsToFlush.Select(i => i.Key).ToList();
+                await repository.MarkAsReadAsync(keys);
+                await apiClient.PostReadStatusAsync(keys);
 
                 lock (readItems)
                 {
