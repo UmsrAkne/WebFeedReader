@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using WebFeedReader.Api;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
@@ -12,11 +13,13 @@ namespace WebFeedReader.Dbs
     {
         private readonly Func<AppDbContext> dbFactory;
         private readonly AppSettings appSettings;
+        private readonly IApiClient apiClient;
 
-        public NgWordService(Func<AppDbContext> dbFactory, AppSettings appSettings)
+        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient, AppSettings appSettings)
         {
             this.dbFactory = dbFactory;
             this.appSettings = appSettings;
+            this.apiClient = apiClient;
         }
 
         public async Task<IReadOnlyList<NgCheckResult>> Check(IEnumerable<FeedItem> feeds)
@@ -69,6 +72,44 @@ namespace WebFeedReader.Dbs
             await appSettings.SaveAsync();
 
             return true;
+        }
+
+        public async Task SyncNgWordsAsync(int version)
+        {
+            var list = await apiClient.GetNgWordsAsync(version);
+            foreach (var ngWord in list)
+            {
+                await AddNgWordAsync(ngWord);
+            }
+        }
+
+        public async Task SyncNgWordsFromServerAsync()
+        {
+            var currentVersion = appSettings.ServerNgWordListVersion;
+            var words = await apiClient.GetNgWordsAsync(currentVersion);
+            var wordList = words.ToList();
+            if (!wordList.Any())
+            {
+                return;
+            }
+
+            await using var db = dbFactory();
+
+            foreach (var word in wordList)
+            {
+                // 既存があれば更新、なければ追加
+                var existing = await db.NgWords.FindAsync(word.Id);
+                if (existing == null)
+                {
+                    db.NgWords.Add(word);
+                }
+            }
+
+            var latestVersion = wordList.Max(w => w.CreatedAt);
+            appSettings.ServerNgWordListVersion = latestVersion;
+
+            await db.SaveChangesAsync();
+            await appSettings.SaveAsync();
         }
 
         private static bool ContainsNgWord(FeedItem feed, IReadOnlyList<string> ngWords)

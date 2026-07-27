@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
@@ -22,6 +23,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     private readonly IFeedItemRepository feedItemRepository;
     private bool isLoading;
     private AsyncRelayCommand initializeCommand;
+    private readonly NgWordService ngWordService;
 
     public MainWindowViewModel()
     {
@@ -48,7 +50,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         NgListPageViewModel ngListPageViewModel,
         FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
         SettingPageViewModel settingPageViewModel,
-        FeedSourceListViewModel feedListVm)
+        FeedSourceListViewModel feedListVm,
+        NgWordService ngWordService)
     {
         this.appSettings = appSettings;
         this.feedSourceRepository = feedSourceRepository;
@@ -60,6 +63,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         FeedSourceCreatePageViewModel = feedSourceCreatePageViewModel;
         SettingPageViewModel = settingPageViewModel;
         FeedSourceListViewModel = feedListVm;
+
+        this.ngWordService = ngWordService;
 
         FeedSourceListViewModel.SelectedItemChanged += async source =>
         {
@@ -97,6 +102,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         IsLoading = true;
         try
         {
+            await ngWordService.SyncNgWordsFromServerAsync();
             await SyncFeedsAsync(appSettings.LastFeedsUpdate);
 
             var sources = await feedSourceRepository.GetAllAsync();

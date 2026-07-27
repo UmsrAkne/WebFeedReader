@@ -25,6 +25,8 @@ namespace WebFeedReader.Utils
 
         public int NgWordListVersion { get; set; }
 
+        public int ServerNgWordListVersion { get; set; }
+
         [JsonIgnore]
         private static string ConfigPath =>
             Path.Combine(AppContext.BaseDirectory, "app_settings.json");

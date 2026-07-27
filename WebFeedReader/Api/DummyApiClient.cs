@@ -69,7 +69,24 @@ namespace WebFeedReader.Api
         {
             Log.Information("Get NgWords Async (DummyApiClient).");
             Log.Information("  - lastVersion: {lastVersion}", lastVersion);
-            IEnumerable<NgWord> list = new List<NgWord>();
+            IEnumerable<NgWord> list = new List<NgWord>()
+            {
+                new ()
+                {
+                    Id = 1,
+                    Value = "testNgWord",
+                    CreatedAt = (int)DateTimeOffset.Now.ToUnixTimeSeconds() - 1,
+                    UpdatedAt = DateTime.Now,
+                },
+
+                new ()
+                {
+                    Id = 2,
+                    Value = "secondNgWord",
+                    CreatedAt = (int)DateTimeOffset.Now.ToUnixTimeSeconds() + 10,
+                    UpdatedAt = DateTime.Now,
+                },
+            };
             return Task.FromResult(list);
         }
 

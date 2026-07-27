@@ -32,6 +32,7 @@ namespace WebFeedReader.Factories
                 Summary = dto.Summary,
                 Key = FeedItem.BuildKey(dto.SourceId, dto.Link),
                 Raw = element.Clone().GetRawText(),
+                IsNg = dto.IsNg,
             };
         }
     }
