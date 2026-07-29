@@ -15,6 +15,8 @@ namespace WebFeedReader.Utils
 
         public string ApiBaseUrl { get; set; } = "http://localhost:8000";
 
+        public string ServerUrlWithPort { get; set; } = "http://localhost:8000";
+
         public int FetchIntervalMinutes { get; set; } = 60;
 
         public bool EnableDebugLog { get; set; }
