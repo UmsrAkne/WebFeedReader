@@ -15,10 +15,10 @@ namespace WebFeedReader.Dbs
         private readonly AppSettings appSettings;
         private readonly IApiClient apiClient;
 
-        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient, AppSettings appSettings)
+        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient)
         {
             this.dbFactory = dbFactory;
-            this.appSettings = appSettings;
+            appSettings = AppSettings.Load();
             this.apiClient = apiClient;
         }
 

@@ -68,6 +68,7 @@ namespace WebFeedReader.ViewModels
             appSettings.FetchIntervalMinutes = FetchIntervalMinutes;
             appSettings.EnableDebugLog = EnableDebugLog;
             appSettings.SshUserName = SshUserName?.Trim();
+            appSettings.ServerUrlWithPort = ServerUrl?.Trim();
             appSettings.Save();
 
             // Notify read-only fields if their display could change (not needed here but safe)

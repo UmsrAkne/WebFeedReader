@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
@@ -41,7 +40,6 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     }
 
     public MainWindowViewModel(
-        AppSettings appSettings,
         IFeedSourceRepository feedSourceRepository,
         IFeedSourceSyncService feedSourceSyncService,
         IFeedSyncService feedSyncService,
@@ -53,7 +51,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         FeedSourceListViewModel feedListVm,
         NgWordService ngWordService)
     {
-        this.appSettings = appSettings;
+        appSettings = AppSettings.Load();
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;

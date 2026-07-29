@@ -13,18 +13,8 @@ namespace WebFeedReader.Api
 {
     public sealed class ApiClientV2 : IApiClient
     {
-        private readonly HttpClient httpClient;
-        private readonly AppSettings appSettings;
-
-        public ApiClientV2(AppSettings appSettings)
-        {
-            httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(10),
-            };
-
-            this.appSettings = appSettings;
-        }
+        private readonly HttpClient httpClient = new() { Timeout = TimeSpan.FromSeconds(10), };
+        private readonly AppSettings appSettings = AppSettings.Load();
 
         public async Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {
