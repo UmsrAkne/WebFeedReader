@@ -81,7 +81,7 @@ public partial class App
         containerRegistry.Register<IApiClient, DummyApiClient>();
 
         #else
-        containerRegistry.Register<IApiClient, ApiClient>();
+        containerRegistry.Register<IApiClient, ApiClientV2>();
 
         #endif
     }
