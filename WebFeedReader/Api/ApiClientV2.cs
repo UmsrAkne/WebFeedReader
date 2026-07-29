@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
@@ -11,27 +13,35 @@ namespace WebFeedReader.Api
 {
     public sealed class ApiClientV2 : IApiClient
     {
-        private readonly HttpClient httpClient;
-        private readonly AppSettings appSettings;
+        private readonly HttpClient httpClient = new() { Timeout = TimeSpan.FromSeconds(10), };
+        private readonly AppSettings appSettings = AppSettings.Load();
 
-        public ApiClientV2(AppSettings appSettings)
+        public async Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {
-            httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(10),
-            };
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["since"] = since.ToString("yyyy-MM-dd HH:mm:ss");
 
-            this.appSettings = appSettings;
+            var url = $"http://{appSettings.ServerUrlWithPort}/feeds?{query}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await httpClient.SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync(ct);
         }
 
-        public Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
+        public async Task<string> GetSourcesAsync(DateTimeOffset since, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
-        }
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["since"] = since.ToString("yyyy-MM-dd HH:mm:ss");
 
-        public Task<string> GetSourcesAsync(DateTimeOffset since, CancellationToken ct = default)
-        {
-            throw new NotImplementedException();
+            var url = $"http://{appSettings.ServerUrlWithPort}/sources?{query}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await httpClient.SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync(ct);
         }
 
         public Task CreateSourceAsync(SourceCreateRequest request, CancellationToken ct = default)
@@ -39,9 +49,18 @@ namespace WebFeedReader.Api
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<NgWord>> GetNgWordsAsync(int lastVersion)
+        public async Task<IEnumerable<NgWord>> GetNgWordsAsync(int lastVersion)
         {
-            throw new NotImplementedException();
+            var url = $"http://{appSettings.ServerUrlWithPort}/ng_words";
+            var dtoList = await httpClient.GetFromJsonAsync<List<NgWordDto>>(url)
+                       ?? new List<NgWordDto>();
+
+            return dtoList.Select(d => new NgWord
+            {
+                Id = d.Id,
+                Value = d.Word,
+                CreatedAt = d.CreatedAt,
+            });
         }
 
         public async Task PostReadStatusAsync(IEnumerable<int> feedItemIds)

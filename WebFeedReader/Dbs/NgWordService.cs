@@ -15,22 +15,30 @@ namespace WebFeedReader.Dbs
         private readonly AppSettings appSettings;
         private readonly IApiClient apiClient;
 
-        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient, AppSettings appSettings)
+        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient)
         {
             this.dbFactory = dbFactory;
-            this.appSettings = appSettings;
+            appSettings = AppSettings.Load();
             this.apiClient = apiClient;
         }
 
         public async Task<IReadOnlyList<NgCheckResult>> Check(IEnumerable<FeedItem> feeds)
         {
+            var setting = AppSettings.Load();
+            var feedItems = feeds.ToList();
+
+            if (!feedItems.Any())
+            {
+                return new List<NgCheckResult>();
+            }
+
             await using var db = dbFactory();
             var ngWords = await db.NgWords.Select(w => w.Value).ToListAsync();
-            return feeds.Select(f => new NgCheckResult
+            return feedItems.Select(f => new NgCheckResult
             {
                 FeedId = f.Id,
-                IsNg = f.NgWordCheckVersion < appSettings.NgWordListVersion ? ContainsNgWord(f, ngWords) : f.IsNg,
-                Version = appSettings.NgWordListVersion,
+                IsNg = f.NgWordCheckVersion < setting.NgWordListVersion ? ContainsNgWord(f, ngWords) : f.IsNg,
+                Version = setting.NgWordListVersion,
             }).ToList();
         }
 
