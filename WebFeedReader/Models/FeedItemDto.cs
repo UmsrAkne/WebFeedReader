@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using WebFeedReader.Utils;
 
 namespace WebFeedReader.Models
 {
@@ -24,6 +25,11 @@ namespace WebFeedReader.Models
         public int SourceId { get; init; }
 
         [JsonPropertyName("is_ng_word")]
+        [JsonConverter(typeof(BooleanConverter))]
         public bool IsNg { get; init; }
+
+        [JsonPropertyName("is_read")]
+        [JsonConverter(typeof(BooleanConverter))]
+        public bool IsRead { get; init; }
     }
 }
