@@ -19,7 +19,7 @@ using WebFeedReader.Utils;
 namespace WebFeedReader.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class FeedListViewModel : BindableBase
+    public sealed class FeedListViewModel : BindableBase, IDisposable
     {
         private readonly IFeedItemRepository repository;
         private readonly NgWordService ngWordService;
@@ -378,6 +378,13 @@ namespace WebFeedReader.ViewModels
                 paginationStatus.IsLoading = false;
                 loadSemaphore.Release();
             }
+        }
+
+        public void Dispose()
+        {
+            loadSemaphore?.Dispose();
+            cts?.Dispose();
+            apiClient?.Dispose();
         }
 
         public async Task FlushReadItemsAsync()
