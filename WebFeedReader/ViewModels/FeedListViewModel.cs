@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -34,6 +35,7 @@ namespace WebFeedReader.ViewModels
         private int? startSelectionIndex;
         private AsyncRelayCommand<string> openUrlAsyncCommand;
         private readonly IApiClient apiClient;
+        private readonly DispatcherTimer dispatcherTimer;
 
         public FeedListViewModel(
             IFeedItemRepository repository,
@@ -51,6 +53,14 @@ namespace WebFeedReader.ViewModels
             {
                 NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
             };
+
+            dispatcherTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(30),
+            };
+
+            dispatcherTimer.Tick += OnFlushTimerElapsed;
+            dispatcherTimer.Start();
         }
 
         public ObservableCollection<FeedItem> Items { get => items; private set => SetProperty(ref items, value); }
@@ -426,6 +436,29 @@ namespace WebFeedReader.ViewModels
                 {
                     readItems.Add(item);
                 }
+            }
+        }
+
+        // ReSharper disable once AsyncVoidEventHandlerMethod // イベントハンドラのため、型は void で固定。
+        private async void OnFlushTimerElapsed(object sender, EventArgs e)
+        {
+            Log.Debug("定期フラッシュが開始されました。");
+
+            // try の中の処理が手間取ると二重起動する可能性があるので止める。
+            dispatcherTimer.Stop();
+
+            try
+            {
+                await FlushReadItemsAsync();
+            }
+            catch (Exception exception)
+            {
+                Log.Warning("定期フラッシュで例外がスローされました。");
+                Log.Warning(exception, "Failed to flush read items to database");
+            }
+            finally
+            {
+                dispatcherTimer.Start();
             }
         }
     }
