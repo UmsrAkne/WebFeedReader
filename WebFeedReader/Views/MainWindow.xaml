@@ -29,6 +29,7 @@
 
     <Window.Resources>
         <converters:UtcToJstConverter x:Key="UtcToJstConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
 
     <TabControl Background="{StaticResource ControlBackgroundBrush}">
@@ -674,8 +675,91 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Padding="5">
-                    <StatusBarItem>
-                        <TextBlock Text="{Binding FeedListViewModel.NgFilteredCount, StringFormat=NG除外: {0} 件}" />
+                    <StatusBar.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- ランプ -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- メッセージ -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- 空白 -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- 最終時間 -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- くるくる -->
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </StatusBar.ItemsPanel>
+
+                    <!-- ① 状態を示す丸いランプ -->
+                    <StatusBarItem Grid.Column="0">
+                        <Ellipse
+                            Width="12"
+                            Height="12"
+                            Margin="5,0"
+                            Stroke="DarkGray"
+                            StrokeThickness="1">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <!-- 非稼働 -->
+                                    <Setter Property="Fill" Value="LightGray" />
+                                    <Style.Triggers>
+                                        <!-- 保存中 -->
+                                        <DataTrigger Binding="{Binding FeedListViewModel.SyncStateIndicatorVm.IsFlushing}" Value="True">
+                                            <Setter Property="Fill" Value="#FF007ACC" />
+                                        </DataTrigger>
+                                        <!-- エラー起きたら赤 -->
+                                        <DataTrigger Binding="{Binding FeedListViewModel.SyncStateIndicatorVm.HasError}" Value="True">
+                                            <Setter Property="Fill" Value="Crimson" />
+                                        </DataTrigger>
+                                        <!-- 正常稼働時 -->
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding FeedListViewModel.SyncStateIndicatorVm.IsFlushing}" Value="False" />
+                                                <Condition Binding="{Binding FeedListViewModel.SyncStateIndicatorVm.HasError}" Value="False" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Fill" Value="LimeGreen" />
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                    </StatusBarItem>
+
+                    <!-- 状態を示すテキストメッセージ -->
+                    <StatusBarItem Grid.Column="1">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="LightSteelBlue"
+                            Text="{Binding FeedListViewModel.SyncStateIndicatorVm.StatusMessage}" />
+                    </StatusBarItem>
+
+                    <!-- 最終同期時刻 -->
+                    <StatusBarItem Grid.Column="3" Margin="10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="LightSteelBlue"
+                                Text="最終同期 : " />
+                            <TextBlock
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Foreground="LightSteelBlue"
+                                Text="{Binding FeedListViewModel.SyncStateIndicatorVm.LastFlushTime}" />
+                        </StackPanel>
+                    </StatusBarItem>
+
+                    <!-- フラッシュ中だけ走るプログレスバー -->
+                    <StatusBarItem Grid.Column="4">
+                        <ProgressBar
+                            Width="50"
+                            Height="8"
+                            Margin="5,0"
+                            IsIndeterminate="True"
+                            Visibility="{Binding FeedListViewModel.SyncStateIndicatorVm.IsFlushing, Converter={StaticResource BoolToVis}}" />
                     </StatusBarItem>
                 </StatusBar>
             </Grid>

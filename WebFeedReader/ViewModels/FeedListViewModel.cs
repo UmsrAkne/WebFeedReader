@@ -85,6 +85,8 @@ namespace WebFeedReader.ViewModels
 
         public int NgFilteredCount { get => ngFilteredCount; set => SetProperty(ref ngFilteredCount, value); }
 
+        public SyncStateIndicatorVm SyncStateIndicatorVm { get; } = new ();
+
         public AsyncRelayCommand<string> OpenUrlAsyncCommand =>
             openUrlAsyncCommand ??= new AsyncRelayCommand<string>(async (url) =>
             {
@@ -454,17 +456,28 @@ namespace WebFeedReader.ViewModels
             // try の中の処理が手間取ると二重起動する可能性があるので止める。
             dispatcherTimer.Stop();
 
+            SyncStateIndicatorVm.IsFlushing = true;
+            SyncStateIndicatorVm.StatusMessage = "Flushing...";
+            SyncStateIndicatorVm.HasError = false;
+
             try
             {
                 await FlushReadItemsAsync();
+
+                SyncStateIndicatorVm.LastFlushTime = DateTime.Now.ToString("HH:mm:ss");
+                SyncStateIndicatorVm.StatusMessage = "Flush successfully";
             }
             catch (Exception exception)
             {
                 Log.Warning("定期フラッシュで例外がスローされました。");
                 Log.Warning(exception, "Failed to flush read items to database");
+
+                SyncStateIndicatorVm.HasError = true;
+                SyncStateIndicatorVm.StatusMessage = "Failed to flush";
             }
             finally
             {
+                SyncStateIndicatorVm.IsFlushing = false;
                 dispatcherTimer.Start();
             }
         }
