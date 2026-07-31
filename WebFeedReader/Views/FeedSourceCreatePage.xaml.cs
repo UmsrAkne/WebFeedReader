@@ -1,8 +1,6 @@
-﻿using System.Windows.Controls;
-
-namespace WebFeedReader.Views
+﻿namespace WebFeedReader.Views
 {
-    public partial class FeedSourceCreatePage : UserControl
+    public partial class FeedSourceCreatePage
     {
         public FeedSourceCreatePage()
         {

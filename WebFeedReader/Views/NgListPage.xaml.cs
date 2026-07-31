@@ -1,8 +1,6 @@
-﻿using System.Windows.Controls;
-
-namespace WebFeedReader.Views
+﻿namespace WebFeedReader.Views
 {
-    public partial class NgListPage : UserControl
+    public partial class NgListPage
     {
         public NgListPage()
         {

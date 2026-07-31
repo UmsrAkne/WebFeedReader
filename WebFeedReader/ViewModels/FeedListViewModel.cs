@@ -28,14 +28,14 @@ namespace WebFeedReader.ViewModels
         private readonly PaginationStatus paginationStatus = new ();
         private readonly SemaphoreSlim loadSemaphore = new (1, 1);
         private readonly IUnreadCountProvider unreadCountProvider;
+        private readonly IApiClient apiClient;
+        private readonly DispatcherTimer dispatcherTimer;
         private CancellationTokenSource cts;
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
         private int ngFilteredCount;
         private int? startSelectionIndex;
         private AsyncRelayCommand<string> openUrlAsyncCommand;
-        private readonly IApiClient apiClient;
-        private readonly DispatcherTimer dispatcherTimer;
 
         public FeedListViewModel(
             IFeedItemRepository repository,
@@ -126,7 +126,7 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
-            System.Windows.Clipboard.SetText(param);
+            Clipboard.SetText(param);
         });
 
         public DelegateCommand<FeedItem> MarkRangeAsReadCommand => new ((item) =>

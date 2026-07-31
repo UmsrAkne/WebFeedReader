@@ -62,7 +62,10 @@ namespace WebFeedReader.ViewModels
 
         private void Save()
         {
-            if (appSettings == null) return;
+            if (appSettings == null)
+            {
+                return;
+            }
 
             appSettings.ApiBaseUrl = ApiBaseUrl?.Trim();
             appSettings.FetchIntervalMinutes = FetchIntervalMinutes;

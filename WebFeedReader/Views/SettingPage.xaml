@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:WebFeedReader.ViewModels"
     d:DataContext="{d:DesignInstance viewModels:SettingPageViewModel}"
-    d:DesignWidth="460"
+    d:DesignWidth="600"
     Background="{StaticResource WindowBackgroundBrush}"
     mc:Ignorable="d">
     <Grid Margin="8">
@@ -45,11 +45,21 @@
                 <TextBox DockPanel.Dock="Right" Text="{Binding ApiBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
             </DockPanel>
 
-            <DockPanel>
-                <TextBlock VerticalAlignment="Center" Text="Server URL with port" />
-                <TextBox DockPanel.Dock="Right" Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}" />
-            </DockPanel>
-
+            <StackPanel
+                Margin="0,15"
+                HorizontalAlignment="Left"
+                DockPanel.Dock="Top">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    FontWeight="Bold"
+                    Text="Server URL" />
+                <TextBlock
+                    Width="400"
+                    HorizontalAlignment="Left"
+                    Foreground="LightSteelBlue"
+                    Text="Format: xxx.xxx.xxx.xxx:yyyy (e.g., 192.168.1.1:8080)" />
+                <TextBox Margin="6,4,0,0" Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
 
             <!-- Editable fields -->
             <DockPanel>

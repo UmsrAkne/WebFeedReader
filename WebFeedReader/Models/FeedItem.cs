@@ -36,9 +36,6 @@ public sealed class FeedItem : BindableBase
 
     public string Raw { get; set; }
 
-    public static string BuildKey(int sourceId, string link)
-        => $"{sourceId}:{link}";
-
     public bool IsRead { get => isRead; set => SetProperty(ref isRead, value); }
 
     public bool IsFavorite { get => isFavorite; set => SetProperty(ref isFavorite, value); }
@@ -56,4 +53,7 @@ public sealed class FeedItem : BindableBase
         get => isPreviewSelected;
         set => SetProperty(ref isPreviewSelected, value);
     }
+
+    public static string BuildKey(int sourceId, string link)
+        => $"{sourceId}:{link}";
 }

@@ -20,9 +20,9 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
     private readonly IFeedSourceRepository feedSourceRepository;
     private readonly IFeedSyncService feedSyncService;
     private readonly IFeedItemRepository feedItemRepository;
+    private readonly NgWordService ngWordService;
     private bool isLoading;
     private AsyncRelayCommand initializeCommand;
-    private readonly NgWordService ngWordService;
 
     public MainWindowViewModel()
     {
