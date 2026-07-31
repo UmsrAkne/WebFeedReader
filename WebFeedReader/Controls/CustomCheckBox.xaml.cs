@@ -1,10 +1,9 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace WebFeedReader.Controls
 {
-    public partial class CustomCheckBox : UserControl
+    public partial class CustomCheckBox
     {
         public readonly static DependencyProperty CommandProperty =
             DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(CustomCheckBox));
