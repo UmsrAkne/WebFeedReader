@@ -87,6 +87,22 @@ namespace WebFeedReader.Dbs
                 .ToList();
         }
 
+        public async Task<IReadOnlyList<FeedItem>> GetByIdsAsync(IEnumerable<int> ids)
+        {
+            var idList = ids.ToList();
+            if (!idList.Any())
+            {
+                return new List<FeedItem>().AsReadOnly();
+            }
+
+            await using var db = dbFactory();
+
+            return await db.FeedItems
+                .AsNoTracking()
+                .Where(x => idList.Contains(x.Id))
+                .ToListAsync();
+        }
+
         public async Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId)
         {
             await using var db = dbFactory();
@@ -167,6 +183,12 @@ namespace WebFeedReader.Dbs
             return await db.Database
                 .SqlQueryRaw<int>(sql, sourceId, currentNgVersion)
                 .SingleAsync();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await using var db = dbFactory();
+            await db.SaveChangesAsync();
         }
 
         public async Task MarkAsReadAsync(IEnumerable<string> keys)

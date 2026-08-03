@@ -17,5 +17,7 @@ namespace WebFeedReader.Api
         Task<IEnumerable<NgWord>> GetNgWordsAsync(int lastVersion);
 
         Task PostReadStatusAsync(IEnumerable<int> feedItemIds);
+
+        Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate);
     }
 }

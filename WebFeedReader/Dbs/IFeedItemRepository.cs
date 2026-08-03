@@ -10,6 +10,8 @@ namespace WebFeedReader.Dbs
 
         Task<IReadOnlyList<FeedItem>> GetAllAsync();
 
+        Task<IReadOnlyList<FeedItem>> GetByIdsAsync(IEnumerable<int> ids);
+
         Task<IReadOnlyList<FeedItem>> GetBySourceIdAsync(int sourceId);
 
         Task<IReadOnlyList<FeedItem>> GetBySourceIdPagedAsync(int sourceId, int offset, int limit, FeedSearchOption feedSearchOption);
@@ -23,5 +25,7 @@ namespace WebFeedReader.Dbs
         Task ApplyNgCheckResultsAsync(IEnumerable<NgCheckResult> results);
 
         Task<int> GetRecentUnreadSafeCountAsync(int sourceId, int currentNgVersion);
+
+        Task SaveChangesAsync();
     }
 }

@@ -110,6 +110,11 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
             {
                 feedSource.UnreadCount = await feedItemRepository.GetRecentUnreadSafeCountAsync(feedSource.Id, ngCheckVersion);
             }
+
+            await FeedListViewModel.ApplyReadFlagHistory();
+            var settings = AppSettings.Load();
+            settings.FeedFlagHistoryCheckedDate = DateTimeOffset.UtcNow;
+            await settings.SaveAsync();
         }
         catch(Exception ex)
         {
