@@ -100,6 +100,7 @@ namespace WebFeedReader.Api
         public Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate)
         {
             Log.Information("Get Read Flag Histories Async (DummyApiClient).");
+            Log.Information($"fromDate: {fromDate}");
             IEnumerable<ReadFlagHistory> list = new List<ReadFlagHistory>()
             {
                 new (),

@@ -29,6 +29,8 @@ namespace WebFeedReader.Utils
 
         public int ServerNgWordListVersion { get; set; }
 
+        public DateTimeOffset FeedFlagHistoryCheckedDate { get; set; }
+
         [JsonIgnore]
         private static string ConfigPath =>
             Path.Combine(AppContext.BaseDirectory, "app_settings.json");

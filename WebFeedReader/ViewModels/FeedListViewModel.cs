@@ -435,6 +435,22 @@ namespace WebFeedReader.ViewModels
             }
         }
 
+        public async Task ApplyReadFlagHistory()
+        {
+            var settings = AppSettings.Load();
+            var fromDate = settings.FeedFlagHistoryCheckedDate;
+            var flags = await apiClient.GetReadFlagHistoriesAsync(fromDate.DateTime);
+            var toChangeIds = flags.Select(h => h.FeedId);
+            var feeds = await repository.GetByIdsAsync(toChangeIds);
+
+            foreach (var feed in feeds)
+            {
+                feed.IsRead = true;
+            }
+
+            await repository.SaveChangesAsync();
+        }
+
         private void MarkAsRead(FeedItem item)
         {
             if (!item.IsRead)
