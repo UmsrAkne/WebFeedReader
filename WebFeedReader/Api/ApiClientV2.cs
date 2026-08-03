@@ -75,6 +75,11 @@ namespace WebFeedReader.Api
             response.EnsureSuccessStatusCode();
         }
 
+        public Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             httpClient.Dispose();

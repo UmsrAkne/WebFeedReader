@@ -97,6 +97,19 @@ namespace WebFeedReader.Api
             return Task.CompletedTask;
         }
 
+        public Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate)
+        {
+            Log.Information("Get Read Flag Histories Async (DummyApiClient).");
+            IEnumerable<ReadFlagHistory> list = new List<ReadFlagHistory>()
+            {
+                new (),
+                new (),
+                new (),
+            };
+
+            return Task.FromResult(list);
+        }
+
         public void Dispose()
         {
             // 何もしない（外部リソース未使用）
