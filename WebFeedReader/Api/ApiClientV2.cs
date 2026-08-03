@@ -6,6 +6,8 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Serilog;
+using Serilog.Core;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
@@ -75,9 +77,23 @@ namespace WebFeedReader.Api
             response.EnsureSuccessStatusCode();
         }
 
-        public Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate)
+        public async Task<IEnumerable<ReadFlagHistory>> GetReadFlagHistoriesAsync(DateTime fromDate)
         {
-            throw new NotImplementedException();
+            Log.Information("Get Read Flag Histories Async (ApiClientV2).");
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["since"] = fromDate.ToString("yyyy-MM-dd HH:mm:ss");
+            var url = $"http://{appSettings.ServerUrlWithPort}/read_flag_history?{query}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var list = await httpClient.GetFromJsonAsync<List<ReadFlagHistory>>(url)
+                       ?? new List<ReadFlagHistory>();
+
+            Log.Information("  - ReadFlagHistories.count: {count}", list.Count);
+            return list;
         }
 
         public void Dispose()
