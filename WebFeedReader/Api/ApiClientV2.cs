@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Serilog;
-using Serilog.Core;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
 
@@ -16,7 +15,13 @@ namespace WebFeedReader.Api
     public sealed class ApiClientV2 : IApiClient
     {
         private readonly HttpClient httpClient = new() { Timeout = TimeSpan.FromSeconds(10), };
-        private readonly AppSettings appSettings = AppSettings.Load();
+        private readonly AppSettings appSettings;
+
+        public ApiClientV2(AppSettings appSettings)
+        {
+            this.appSettings = appSettings;
+            Log.Information($"appSettings hashcode: {appSettings.GetHashCode()}");
+        }
 
         public async Task<string> GetFeedsAsync(DateTimeOffset since, CancellationToken ct = default)
         {

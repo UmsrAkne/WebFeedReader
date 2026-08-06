@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using WebFeedReader.Api;
 using WebFeedReader.Models;
 using WebFeedReader.Utils;
@@ -15,16 +16,19 @@ namespace WebFeedReader.Dbs
         private readonly AppSettings appSettings;
         private readonly IApiClient apiClient;
 
-        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient)
+        public NgWordService(Func<AppDbContext> dbFactory, IApiClient apiClient, AppSettings appSettings)
         {
             this.dbFactory = dbFactory;
-            appSettings = AppSettings.Load();
+            this.appSettings = appSettings;
             this.apiClient = apiClient;
+
+            Log.Information($"appSettings hashcode: {appSettings.GetHashCode()}");
         }
+
+        public int NgWordCheckVersion => appSettings.NgWordListVersion;
 
         public async Task<IReadOnlyList<NgCheckResult>> Check(IEnumerable<FeedItem> feeds)
         {
-            var setting = AppSettings.Load();
             var feedItems = feeds.ToList();
 
             if (!feedItems.Any())
@@ -37,8 +41,8 @@ namespace WebFeedReader.Dbs
             return feedItems.Select(f => new NgCheckResult
             {
                 FeedId = f.Id,
-                IsNg = f.NgWordCheckVersion < setting.NgWordListVersion ? ContainsNgWord(f, ngWords) : f.IsNg,
-                Version = setting.NgWordListVersion,
+                IsNg = f.NgWordCheckVersion < appSettings.NgWordListVersion ? ContainsNgWord(f, ngWords) : f.IsNg,
+                Version = appSettings.NgWordListVersion,
             }).ToList();
         }
 
