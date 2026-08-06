@@ -30,6 +30,7 @@ namespace WebFeedReader.ViewModels
         private readonly IUnreadCountProvider unreadCountProvider;
         private readonly IApiClient apiClient;
         private readonly DispatcherTimer dispatcherTimer;
+        private readonly AppSettings appSettings;
         private CancellationTokenSource cts;
         private ObservableCollection<FeedItem> items = new ();
         private FeedItem selectedItem;
@@ -42,16 +43,22 @@ namespace WebFeedReader.ViewModels
             IReadHistoryRepository readHistoryRepository,
             NgWordService ngWordService,
             IApiClient apiClient,
-            IUnreadCountProvider unreadCountProvider)
+            IUnreadCountProvider unreadCountProvider,
+            AppSettings appSettings)
         {
             this.repository = repository;
             this.ngWordService = ngWordService;
             this.readHistoryRepository = readHistoryRepository;
             this.unreadCountProvider = unreadCountProvider;
+            this.appSettings = appSettings;
             this.apiClient = apiClient;
+
+            Log.Information("FeedListViewModel created.");
+            Log.Information($"appSettinsg hashcode: {appSettings.GetHashCode()}");
+
             FeedSearchOption = new FeedSearchOption
             {
-                NgWordCheckVersion = AppSettings.Load().NgWordListVersion,
+                NgWordCheckVersion = ngWordService.NgWordCheckVersion,
             };
 
             dispatcherTimer = new DispatcherTimer
@@ -437,8 +444,7 @@ namespace WebFeedReader.ViewModels
 
         public async Task ApplyReadFlagHistory()
         {
-            var settings = AppSettings.Load();
-            var fromDate = settings.FeedFlagHistoryCheckedDate;
+            var fromDate = appSettings.FeedFlagHistoryCheckedDate;
             var flags = await apiClient.GetReadFlagHistoriesAsync(fromDate.DateTime);
             var toChangeIds = flags.Select(h => h.FeedId);
             var feeds = await repository.GetByIdsAsync(toChangeIds);

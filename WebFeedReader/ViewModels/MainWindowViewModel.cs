@@ -26,7 +26,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
     public MainWindowViewModel()
     {
-        FeedListViewModel = new FeedListViewModel(null, null, null, null, null);
+        FeedListViewModel = new FeedListViewModel(null, null, null, null, null, null);
 
         var feedsJson = new DummyApiClient().GetFeedsAsync(DateTime.Now);
         FeedListViewModel.Items.AddRange(FeedItemFactory.FromJson(feedsJson.Result, string.Empty));
@@ -49,9 +49,10 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
         SettingPageViewModel settingPageViewModel,
         FeedSourceListViewModel feedListVm,
-        NgWordService ngWordService)
+        NgWordService ngWordService,
+        AppSettings appSettings)
     {
-        appSettings = AppSettings.Load();
+        this.appSettings = appSettings;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
@@ -105,16 +106,15 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
 
             var sources = await feedSourceRepository.GetAllAsync();
             FeedSourceListViewModel.Items.AddRange(sources);
-            var ngCheckVersion = AppSettings.Load().NgWordListVersion;
+            var ngCheckVersion = ngWordService.NgWordCheckVersion;
             foreach (var feedSource in FeedSourceListViewModel.Items)
             {
                 feedSource.UnreadCount = await feedItemRepository.GetRecentUnreadSafeCountAsync(feedSource.Id, ngCheckVersion);
             }
 
             await FeedListViewModel.ApplyReadFlagHistory();
-            var settings = AppSettings.Load();
-            settings.FeedFlagHistoryCheckedDate = DateTimeOffset.UtcNow;
-            await settings.SaveAsync();
+            appSettings.FeedFlagHistoryCheckedDate = DateTimeOffset.UtcNow;
+            await appSettings.SaveAsync();
         }
         catch(Exception ex)
         {
