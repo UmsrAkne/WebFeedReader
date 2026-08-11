@@ -20,9 +20,18 @@
                         <ControlTemplate TargetType="ToggleButton">
                             <Border
                                 x:Name="ToggleButtonBorder"
-                                Background="LightSeaGreen"
+                                Background="DarkSlateGray"
                                 BorderThickness="1"
                                 CornerRadius="6">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="5"
+                                        Direction="270"
+                                        Opacity="0.2"
+                                        ShadowDepth="2"
+                                        Color="Black" />
+                                </Border.Effect>
+
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <ContentPresenter.Content>
                                         <TextBlock
@@ -32,11 +41,11 @@
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsChecked}" Value="True">
+                                                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsChecked}" Value="False">
                                                             <Setter Property="Foreground" Value="LightSteelBlue" />
                                                         </DataTrigger>
 
-                                                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsChecked}" Value="False">
+                                                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsChecked}" Value="True">
                                                             <Setter Property="Foreground" Value="White" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -63,6 +72,12 @@
                                                     To="LightGreen"
                                                     Duration="0:0:0.2" />
 
+                                                <ThicknessAnimation
+                                                    Storyboard.TargetName="ToggleButtonBorder"
+                                                    Storyboard.TargetProperty="BorderThickness"
+                                                    To="3"
+                                                    Duration="0:0:0.2" />
+
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
@@ -76,6 +91,11 @@
                                                     To="LightSeaGreen"
                                                     Duration="0:0:0.2" />
 
+                                                <ThicknessAnimation
+                                                    Storyboard.TargetName="ToggleButtonBorder"
+                                                    Storyboard.TargetProperty="BorderThickness"
+                                                    To="0"
+                                                    Duration="0:0:0.2" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>
@@ -88,7 +108,7 @@
                                                 <ColorAnimation
                                                     Storyboard.TargetName="ToggleButtonBorder"
                                                     Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="DarkSlateGray"
+                                                    To="LightSeaGreen"
                                                     Duration="0:0:0.1" />
                                             </Storyboard>
                                         </BeginStoryboard>
