@@ -63,6 +63,12 @@
                                                     To="LightGreen"
                                                     Duration="0:0:0.2" />
 
+                                                <ThicknessAnimation
+                                                    Storyboard.TargetName="ToggleButtonBorder"
+                                                    Storyboard.TargetProperty="BorderThickness"
+                                                    To="3"
+                                                    Duration="0:0:0.2" />
+
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
@@ -76,6 +82,11 @@
                                                     To="LightSeaGreen"
                                                     Duration="0:0:0.2" />
 
+                                                <ThicknessAnimation
+                                                    Storyboard.TargetName="ToggleButtonBorder"
+                                                    Storyboard.TargetProperty="BorderThickness"
+                                                    To="0"
+                                                    Duration="0:0:0.2" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>
