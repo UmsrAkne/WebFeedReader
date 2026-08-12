@@ -9,10 +9,8 @@ namespace WebFeedReader.ViewModels
     {
         private readonly AppSettings appSettings;
 
-        private string apiBaseUrl;
         private int fetchIntervalMinutes;
         private bool enableDebugLog;
-        private string sshUserName;
         private string serverUrl;
 
         public SettingPageViewModel(AppSettings appSettings)
@@ -20,19 +18,12 @@ namespace WebFeedReader.ViewModels
             this.appSettings = appSettings;
 
             // Initialize editable properties from app settings
-            ApiBaseUrl = appSettings?.ApiBaseUrl ?? string.Empty;
             FetchIntervalMinutes = appSettings?.FetchIntervalMinutes ?? 0;
             EnableDebugLog = appSettings?.EnableDebugLog ?? false;
-            SshUserName = appSettings?.SshUserName ?? string.Empty;
 
             SaveCommand = new DelegateCommand(Save, CanSave)
-                .ObservesProperty(() => ApiBaseUrl)
-                .ObservesProperty(() => FetchIntervalMinutes)
-                .ObservesProperty(() => SshUserName);
+                .ObservesProperty(() => FetchIntervalMinutes);
         }
-
-        // Editable properties
-        public string ApiBaseUrl { get => apiBaseUrl; set => SetProperty(ref apiBaseUrl, value); }
 
         public string ServerUrl { get => serverUrl; set => SetProperty(ref serverUrl, value); }
 
@@ -43,8 +34,6 @@ namespace WebFeedReader.ViewModels
         }
 
         public bool EnableDebugLog { get => enableDebugLog; set => SetProperty(ref enableDebugLog, value); }
-
-        public string SshUserName { get => sshUserName; set => SetProperty(ref sshUserName, value); }
 
         // View-only properties
         public string LastFeedsUpdate => (appSettings?.LastFeedsUpdate).ToString();
@@ -67,10 +56,8 @@ namespace WebFeedReader.ViewModels
                 return;
             }
 
-            appSettings.ApiBaseUrl = ApiBaseUrl?.Trim();
             appSettings.FetchIntervalMinutes = FetchIntervalMinutes;
             appSettings.EnableDebugLog = EnableDebugLog;
-            appSettings.SshUserName = SshUserName?.Trim();
             appSettings.ServerUrlWithPort = ServerUrl?.Trim();
             appSettings.Save();
 

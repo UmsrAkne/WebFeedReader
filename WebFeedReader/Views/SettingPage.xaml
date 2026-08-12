@@ -40,10 +40,6 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2">
-            <DockPanel>
-                <TextBlock VerticalAlignment="Center" Text="ApiBaseUrl" />
-                <TextBox DockPanel.Dock="Right" Text="{Binding ApiBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
-            </DockPanel>
 
             <StackPanel
                 Margin="0,15"

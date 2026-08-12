@@ -13,15 +13,11 @@ namespace WebFeedReader.Utils
         public static readonly DateTimeOffset InitialFeedsUpdate
             = new (2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-        public string ApiBaseUrl { get; set; } = "http://localhost:8000";
-
         public string ServerUrlWithPort { get; set; } = "http://localhost:8000";
 
         public int FetchIntervalMinutes { get; set; } = 60;
 
         public bool EnableDebugLog { get; set; }
-
-        public string SshUserName { get; set; }
 
         public DateTimeOffset LastFeedsUpdate { get; set; } = InitialFeedsUpdate;
 
