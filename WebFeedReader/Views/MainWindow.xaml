@@ -91,6 +91,13 @@
                             IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsReverseOrder}"
                             Label="Newest first" />
 
+                        <controls:CustomDesignToggleButton
+                            Width="150"
+                            Margin="15,0"
+                            Command="{Binding FeedListViewModel.LoadAsyncCommand}"
+                            IsChecked="{Binding FeedListViewModel.FeedSearchOption.IsTodayOnly}"
+                            Label="Today" />
+
                     </StackPanel>
                 </StatusBar>
 
