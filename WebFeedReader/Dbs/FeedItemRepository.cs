@@ -145,6 +145,11 @@ namespace WebFeedReader.Dbs
                 whereDate += " AND Published >= datetime('now', '-1 month', 'localtime')";
             }
 
+            if (option.IsTodayOnly)
+            {
+                whereDate += " AND Published >= datetime('now', 'start of day')";
+            }
+
             // NGワードチェックの判定ロジックを追加
             // 条件： (ItemのVer < OptionのVer) OR (IsNg が false)
             // 逆説的に「除外したい条件（Ver >= OptionVer かつ IsNg = true）」以外を残す

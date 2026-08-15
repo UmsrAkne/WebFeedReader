@@ -11,10 +11,13 @@ namespace WebFeedReader.Models
         private DateTime publishedTo;
         private string keyword = string.Empty;
         private int ngWordCheckVersion;
+        private bool isTodayOnly;
 
         public bool IsReverseOrder { get => isReverseOrder; set => SetProperty(ref isReverseOrder, value); }
 
         public bool IsUnreadOnly { get => isUnreadOnly; set => SetProperty(ref isUnreadOnly, value); }
+
+        public bool IsTodayOnly { get => isTodayOnly; set => SetProperty(ref isTodayOnly, value); }
 
         public DateTime PublishedFrom { get => publishedFrom; set => SetProperty(ref publishedFrom, value); }
 
