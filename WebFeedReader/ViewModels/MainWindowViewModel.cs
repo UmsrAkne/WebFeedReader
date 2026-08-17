@@ -49,10 +49,8 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         FeedSourceCreatePageViewModel feedSourceCreatePageViewModel,
         SettingPageViewModel settingPageViewModel,
         FeedSourceListViewModel feedListVm,
-        NgWordService ngWordService,
-        AppSettings appSettings)
+        NgWordService ngWordService)
     {
-        this.appSettings = appSettings;
         this.feedSourceRepository = feedSourceRepository;
         this.feedSourceSyncService = feedSourceSyncService;
         this.feedSyncService = feedSyncService;
@@ -61,6 +59,7 @@ public class MainWindowViewModel : BindableBase, IScrollResettable
         NgListPageViewModel = ngListPageViewModel;
         FeedSourceCreatePageViewModel = feedSourceCreatePageViewModel;
         SettingPageViewModel = settingPageViewModel;
+        appSettings = settingPageViewModel.AppSettings;
         FeedSourceListViewModel = feedListVm;
 
         this.ngWordService = ngWordService;
