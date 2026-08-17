@@ -25,6 +25,8 @@ namespace WebFeedReader.ViewModels
                 .ObservesProperty(() => FetchIntervalMinutes);
         }
 
+        public AppSettings AppSettings => appSettings;
+
         public string ServerUrl { get => serverUrl; set => SetProperty(ref serverUrl, value); }
 
         public int FetchIntervalMinutes
